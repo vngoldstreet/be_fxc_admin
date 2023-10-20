@@ -335,6 +335,6 @@ func main() {
 	})
 	protected := r.Group("/private")
 	protected.Use(JwtAuthMiddleware())
-	r.Run(":8080")
+	r.Run(":8081")
 
 }
