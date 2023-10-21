@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"time"
 
 	"gorm.io/gorm"
@@ -155,10 +156,10 @@ type LeaderBoards struct {
 	gorm.Model
 	ContestID      string  `json:"contest_id"`
 	CustomerID     uint    `json:"customer_id"`
-	StartBalance   int     `json:"start_balance"`
-	CurrentBalance int     `json:"current_balance"`
-	CurrentEquity  int     `json:"current_equity"`
-	PnL            float64 `json:"pnl"`
+	StartBalance   float64 `json:"start_balance"`
+	CurrentBalance float64 `json:"current_balance"`
+	CurrentEquity  float64 `json:"current_equity"`
+	FloatingPL     float64 `json:"pnl"`
 }
 
 type CpsMessages struct {
@@ -166,4 +167,13 @@ type CpsMessages struct {
 	TypeID  int    `json:"type_id"`
 	Message string `json:"message"`
 	IsSent  int    `json:"is_sent" gorm:"default:0"`
+}
+
+func removeSpecialChars(input string) string {
+	regex := regexp.MustCompile("[^a-zA-Z0-9@.,]")
+
+	// Sử dụng ReplaceAllString để thay thế tất cả các ký tự đặc biệt bằng dấu trống
+	result := regex.ReplaceAllString(input, "")
+
+	return result
 }
