@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -142,6 +141,18 @@ func main() {
 			}
 		}
 		db_ksc.Save(&datas)
+
+		//Delete from redis
+		userid := []CpsUsers{}
+		db_ksc.Model(CpsUsers{}).Select("id").Find(&userid)
+		keysToDelete := []string{}
+		for _, v := range userid {
+			keysToDelete = append(keysToDelete, setKey(v.ID, db_leaderboard))
+		}
+		if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+			fmt.Printf("err Del Redis key: %v\n", err)
+		}
+
 		c.JSON(200, datas)
 	})
 	private.POST("/update-contest-id", func(c *gin.Context) {
@@ -160,6 +171,18 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
+		//Delete from redis
+		userid := []CpsUsers{}
+		db_ksc.Model(CpsUsers{}).Select("id").Find(&userid)
+		keysToDelete := []string{}
+		for _, v := range userid {
+			keysToDelete = append(keysToDelete, setKey(v.ID, db_greetings))
+		}
+		if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+			fmt.Printf("err Del Redis key: %v\n", err)
+		}
+
 		c.JSON(http.StatusOK, gin.H{"data": newContest})
 	})
 	private.POST("/create-contest", func(c *gin.Context) {
@@ -189,13 +212,24 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
 		formatMessage := "A new contest has been created: %s\nAmount: %sG\nMaxPerson: %d\nStartAt: %s\nExpiresAt: %s\nStartBalance: %d$\n"
-
 		msg := fmt.Sprintf(formatMessage, newContest.ContestID, NumberToString(int(newContest.Amount), ','), newContest.MaximumPerson, newContest.Start_at.Format("2006-01-02 15:04:05"), newContest.Expired_at.Format("2006-01-02 15:04:05"), newContest.StartBalance)
-
 		if err := SaveToMessages(1, msg); err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
+
+		//Delete from redis
+		userid := []CpsUsers{}
+		db_ksc.Model(CpsUsers{}).Select("id").Find(&userid)
+		keysToDelete := []string{}
+		for _, v := range userid {
+			keysToDelete = append(keysToDelete, setKey(v.ID, db_greetings))
+		}
+		if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+			fmt.Printf("err Del Redis key: %v\n", err)
+		}
+
 		c.JSON(http.StatusOK, gin.H{"data": newContest})
 	})
 	private.POST("/contest-approval", func(c *gin.Context) {
@@ -234,6 +268,14 @@ func main() {
 		if err := SaveToMessages(1, msg); err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
+
+		//Delete from redis
+		keysToDelete := []string{}
+		keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
+		if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+			fmt.Printf("err Del Redis key: %v\n", err)
+		}
+
 		c.JSON(http.StatusOK, gin.H{"data": currentContest})
 	})
 	private.POST("/admin-transaction", func(c *gin.Context) {
@@ -287,15 +329,12 @@ func main() {
 					formatMessage := "Deposit completed: %d\nCustomer: %s (%d - %s)\nType: %s\nBeforeBalance: %sG\nChange: %sG\nNewBalance: %sG\n"
 					msg := fmt.Sprintf(formatMessage, newTrans.ID, user.Name, user.ID, user.Email, type_string, NumberToString(int(newTrans.CBalance), ','), NumberToString(int(newTrans.Amount), ','), NumberToString(int(newTrans.NBalance), ','))
 
-					// Danh sách các key bạn muốn xóa
-					keysToDelete := []string{setKey(newTrans.CustomerID, db_transactions), setKey(newTrans.CustomerID, db_wallets), setKey(newTrans.CustomerID, db_transaction_charts), setKey(newTrans.CustomerID, db_wallets)}
-					// Sử dụng lệnh DEL để xóa các key
-					result, err := rdb.Del(context.Background(), keysToDelete...).Result()
-					if err != nil {
-						log.Fatal(err)
+					//Delete from redis
+					keysToDelete := []string{}
+					keysToDelete = append(keysToDelete, setKey(newTrans.CustomerID, db_greetings))
+					if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+						fmt.Printf("err Del Redis key: %v\n", err)
 					}
-					fmt.Printf("Số key đã bị xóa: %d\n", result)
-					///----
 
 					if err := SaveToMessages(2, msg); err != nil {
 						fmt.Printf("err: %v\n", err)
@@ -339,15 +378,12 @@ func main() {
 						fmt.Printf("err: %v\n", err)
 					}
 
-					// Danh sách các key bạn muốn xóa
-					keysToDelete := []string{setKey(newTrans.CustomerID, db_transactions), setKey(newTrans.CustomerID, db_wallets), setKey(newTrans.CustomerID, db_transaction_charts), setKey(newTrans.CustomerID, db_wallets)}
-					// Sử dụng lệnh DEL để xóa các key
-					result, err := rdb.Del(context.Background(), keysToDelete...).Result()
-					if err != nil {
-						log.Fatal(err)
+					//Delete from redis
+					keysToDelete := []string{}
+					keysToDelete = append(keysToDelete, setKey(newTrans.CustomerID, db_greetings))
+					if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+						fmt.Printf("err Del Redis key: %v\n", err)
 					}
-					fmt.Printf("Số key đã bị xóa: %d\n", result)
-					///----
 
 					c.JSON(http.StatusOK, gin.H{
 						"message": msg,
@@ -403,15 +439,13 @@ func main() {
 					if err := SaveToMessages(2, msg); err != nil {
 						fmt.Printf("err: %v\n", err)
 					}
-					// Danh sách các key bạn muốn xóa
-					keysToDelete := []string{setKey(newTrans.CustomerID, db_transactions), setKey(newTrans.CustomerID, db_wallets), setKey(newTrans.CustomerID, db_transaction_charts), setKey(newTrans.CustomerID, db_wallets)}
-					// Sử dụng lệnh DEL để xóa các key
-					result, err := rdb.Del(context.Background(), keysToDelete...).Result()
-					if err != nil {
-						log.Fatal(err)
+
+					//Delete from redis
+					keysToDelete := []string{}
+					keysToDelete = append(keysToDelete, setKey(newTrans.CustomerID, db_greetings))
+					if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+						fmt.Printf("err Del Redis key: %v\n", err)
 					}
-					fmt.Printf("Số key đã bị xóa: %d\n", result)
-					///----
 
 					c.JSON(http.StatusOK, gin.H{
 						"message": msg,
@@ -463,15 +497,13 @@ func main() {
 						fmt.Printf("err: %v\n", err)
 					}
 
-					// Danh sách các key bạn muốn xóa
-					keysToDelete := []string{setKey(newTrans.CustomerID, db_transactions), setKey(newTrans.CustomerID, db_wallets), setKey(newTrans.CustomerID, db_transaction_charts), setKey(newTrans.CustomerID, db_wallets)}
-					// Sử dụng lệnh DEL để xóa các key
-					result, err := rdb.Del(context.Background(), keysToDelete...).Result()
-					if err != nil {
-						log.Fatal(err)
+					//Delete from redis
+					keysToDelete := []string{}
+					keysToDelete = append(keysToDelete, setKey(newTrans.CustomerID, db_greetings))
+					if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+						fmt.Printf("err Del Redis key: %v\n", err)
 					}
-					fmt.Printf("Số key đã bị xóa: %d\n", result)
-					///----
+
 					//--
 					c.JSON(http.StatusOK, gin.H{
 						"old_wallet": wallet,

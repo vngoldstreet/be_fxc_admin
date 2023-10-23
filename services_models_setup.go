@@ -59,10 +59,5 @@ func setKey(id uint, dbstring string) string {
 	return fmt.Sprintf("%s_id:%d", dbstring, id)
 }
 
-var db_users string = "db:users"
-var db_wallets string = "db:wallets"
-var db_transactions string = "db:transactions"
-var db_transaction_charts string = "db:transaction_charts"
-var db_contest_lists string = "db:contest_lists"
-var db_contest_infos string = "db:contest_infos"
-var db_leader_board string = "db:leader_board"
+var db_greetings string = "db:greetings"
+var db_leaderboard string = "db:leaderboards"
