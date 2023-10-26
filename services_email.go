@@ -124,7 +124,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																			<tr>
 																				<td align="left" style="font:300 20px/28px roboto,helvetica,sans-serif;color:#636e72;padding:25px 0 0;margin:0">
 																					If you don't have it yet, please proceed with the
-																					installation here:"
+																					installation here
 																				</td>
 																			</tr>
 																		</tbody>
@@ -340,7 +340,7 @@ func SendEmailForRegister(toEmail string, account string, user_password string) 
                                                             <td align="left"
                                                                 style="font:300 20px/28px roboto,helvetica,sans-serif;color:#636e72;padding:25px 0 0;margin:0">
                                                                 If you don't have it yet, please proceed with the
-                                                                installation here:"
+                                                                installation here
                                                             </td>
                                                         </tr>
                                                     </tbody>
