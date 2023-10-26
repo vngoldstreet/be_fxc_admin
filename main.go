@@ -9,9 +9,6 @@ import (
 )
 
 func main() {
-	// dbMigrations()
-	// db_ksc.Migrator().DropTable(RawMT5Datas{})
-	// db_ksc.AutoMigrate(RawMT5Datas{})
 	r := gin.Default()
 	// r.Static("/src/assets", "./src/assets")
 	// r.LoadHTMLGlob("html/*")
