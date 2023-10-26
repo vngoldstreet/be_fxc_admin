@@ -127,6 +127,18 @@ type ListContests struct {
 	StatusID      int       `json:"status_id" gorm:"default:0"`
 }
 
+type CreateContest struct {
+	ContestID     string  `json:"contest_id"`
+	Amount        float64 `json:"amount"`
+	MaximumPerson int     `json:"maximum_person"`
+	CurrentPerson int     `json:"current_person" gorm:"default:0"`
+	Start_at      string  `json:"start_at"`
+	Expired_at    string  `json:"expired_at"`
+	StartBalance  int     `json:"start_balance"`
+	EstimatedTime string  `json:"estimate_time"`
+	StatusID      int     `json:"status_id" gorm:"default:0"`
+}
+
 type Contests struct {
 	gorm.Model
 	ContestID    string `json:"contest_id"`
@@ -176,4 +188,18 @@ func removeSpecialChars(input string) string {
 	result := regex.ReplaceAllString(input, "")
 
 	return result
+}
+
+type RawMT5Datas struct {
+	gorm.Model
+	Login      string  `json:"login"`
+	Name       string  `json:"name"`
+	LastName   string  `json:"last_name"`
+	MiddleName string  `json:"middle_name"`
+	ContestID  string  `json:"contest_id"`
+	Email      string  `json:"email"`
+	Balance    float64 `json:"balance"`
+	Equity     float64 `json:"equity"`
+	Profit     float64 `json:"profit"`
+	FloatingPL float64 `json:"floating"`
 }

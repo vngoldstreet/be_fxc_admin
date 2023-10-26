@@ -17,6 +17,8 @@ var rdb *redis.Client
 
 func init() {
 	connectDatabase()
+	// SendEmailForContest("vietvufx@gmail.com", "abchdwr", "8008000", "khongshochay", "khongsochay")
+	// SendEmailForRegister("vietvufx@gmail.com", "8008000", "khongshochay")
 	// dbMigrations()
 	// setupLogger()
 	rdb = redis.NewClient(&redis.Options{
