@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.title}} - FXChampionship - A Gathering Place for World-Class Traders</title>
+  <link rel="shortcut icon" type="image/png" href="src/assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="src/assets/css/styles.min.css" />
+  <meta name="description"
+    content="Win the competition, and you could receive $5,000, $50,000, or even $500,000, with an entry fee of only $100. Gain the opportunity to participate in training and become a trader in a professional environment (banks, hedge funds, etc.). Seize the chance to invest millions of dollars and reap profits from it.">
+  <meta name="keywords"
+    content="Trader competition prizes, Trading competition entry fee, Professional trading environment, Investment opportunities, Million-dollar investments,Profit sharing, Trader training program, Hedge fund trading, Banking sector opportunities, Financial competition rewards">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FXChampionship - A Gathering Place for World-Class Traders">
+  <meta property="og:description"
+    content="Win the competition, and you could receive $5,000, $50,000, or even $500,000, with an entry fee of only $100. Gain the opportunity to participate in training and become a trader in a professional environment (banks, hedge funds, etc.). Seize the chance to invest millions of dollars and reap profits from it.">
+  <meta property="author" content="fxchampionship.com">
+  <meta property="generator" content="fxchampionship.com">
+  <meta property="og:url" content="https://fxchampionship.com">
+  <meta property="og:image:width" content="200">
+  <meta property="og:image:height" content="200">
+  <meta property="og:image" content="src/assets/images/logos/apple-touch-icon.png">
+  <meta property="og:image:alt" content="FXChampionship - A Gathering Place for World-Class Traders">
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    {{template "left-sidebar.html"}}
+    <div class="body-wrapper">
+      {{template "header.html"}}
+      <div class="container-fluid">
+        <div class="col-12 d-flex align-items-stretch">
+          <div class="card w-100">
+            <div class="card-body p-4">
+              <h5 class="card-title fw-semibold mb-4">List of Transactions</h5>
+              <div class="table-responsive table-option">
+                <table class="table text-nowrap mb-0 align-middle">
+                  <thead class="text-dark fs-4 sticky-top bg-light">
+                    <tr>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">ID/TranID</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Type</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Created/Updated</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Name/Phone/Email</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Amount</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Status</h6>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="transaction-list">
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="src/assets/js/app.min.js"></script>
+  <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+  <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
+  <script src="src/assets/js/transaction-history.js"></script>
+  <script src="src/assets/js/header.js"></script>
+  <script src="src/assets/js/sidebarmenu.js"></script>
+</body>
+
+</html>

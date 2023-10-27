@@ -78,6 +78,24 @@ type CpsTransactions struct {
 	ParentID      int     `json:"parent_id"`
 	ContestID     string  `json:"contest_id"`
 }
+
+type CpsAdminTransactions struct {
+	gorm.Model
+	TypeID        int     `json:"type_id"`
+	CustomerID    uint    `json:"customer_id"`
+	CBalance      float64 `json:"c_balance"`
+	Amount        float64 `json:"amount"`
+	NBalance      float64 `json:"n_balance"`
+	PaymentMethob int     `json:"payment_methob"`
+	PaymentGate   int     `json:"payment_gate"`
+	StatusID      int     `json:"status_id"`
+	ParentID      int     `json:"parent_id"`
+	ContestID     string  `json:"contest_id"`
+	Name          string  `json:"name"`
+	Email         string  `json:"email"`
+	Phone         string  `json:"phone"`
+}
+
 type CpsTransactionTypes struct {
 	gorm.Model
 	Type        int    `json:"type"`

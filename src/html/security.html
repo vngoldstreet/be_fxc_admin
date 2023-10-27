@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.title}} - FXChampionship - A Gathering Place for World-Class Traders</title>
+  <link rel="shortcut icon" type="image/png" href="src/assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="src/assets/css/styles.min.css" />
+  <meta name="description"
+    content="Win the competition, and you could receive $5,000, $50,000, or even $500,000, with an entry fee of only $100. Gain the opportunity to participate in training and become a trader in a professional environment (banks, hedge funds, etc.). Seize the chance to invest millions of dollars and reap profits from it.">
+  <meta name="keywords"
+    content="Trader competition prizes, Trading competition entry fee, Professional trading environment, Investment opportunities, Million-dollar investments,Profit sharing, Trader training program, Hedge fund trading, Banking sector opportunities, Financial competition rewards">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FXChampionship - A Gathering Place for World-Class Traders">
+  <meta property="og:description"
+    content="Win the competition, and you could receive $5,000, $50,000, or even $500,000, with an entry fee of only $100. Gain the opportunity to participate in training and become a trader in a professional environment (banks, hedge funds, etc.). Seize the chance to invest millions of dollars and reap profits from it.">
+  <meta property="author" content="fxchampionship.com">
+  <meta property="generator" content="fxchampionship.com">
+  <meta property="og:url" content="https://fxchampionship.com">
+  <meta property="og:image:width" content="200">
+  <meta property="og:image:height" content="200">
+  <meta property="og:image" content="src/assets/images/logos/apple-touch-icon.png">
+  <meta property="og:image:alt" content="FXChampionship - A Gathering Place for World-Class Traders">
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    {{template "left-sidebar.html"}}
+    <div class="body-wrapper">
+      {{template "header.html"}}
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Update Password</h5>
+            <form id="formreg">
+              <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="cpassword" name="cpassword" required>
+                <span id="fb_cpassword"></span>
+              </div>
+              <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="npassword" name="npassword" required>
+                <span id="fb_npassword"></span>
+              </div>
+              <div class="mb-4">
+                <label for="confirm_password" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                <span id="fb_confirm_password"></span>
+              </div>
+              <p class="" id="messagefailure"></p>
+              <!-- <input class="btn btn-secondary w-100 py-8 fs-4 mb-4 rounded-2" type="submit" value="Sign Up"> -->
+              <button type="button" id="user_info_change_password"
+                class="btn btn-secondary w-25 d-block">Submit</button>
+              <!-- <a href="/" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" type="submit">Sign Up</a> -->
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="src/assets/js/app.min.js"></script>
+  <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+  <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
+  <script src="src/assets/js/security.js"></script>
+  <script src="src/assets/js/header.js"></script>
+  <script src="src/assets/js/sidebarmenu.js"></script>
+</body>
+
+</html>
