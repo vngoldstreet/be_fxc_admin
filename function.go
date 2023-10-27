@@ -266,6 +266,23 @@ func updateContestByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	updateContest := []Contests{}
+	if err := db_ksc.Model(Contests{}).Where("contest_id = ?", input.ContestID).Find(&updateContest).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	for _, new := range updateContest {
+		updates := Contests{
+			StatusID: input.StatusID,
+		}
+		if err := db_ksc.Model(&new).Where("id = ?", new.ID).Updates(updates).Error; err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
 	//Delete from redis
 	userid := []CpsUsers{}
 	db_ksc.Model(CpsUsers{}).Select("id").Find(&userid)
