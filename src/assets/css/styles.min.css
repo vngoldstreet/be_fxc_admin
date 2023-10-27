@@ -8,6 +8,12 @@ Orange #ffa500
 Violet #8f12fd
 */
 
+.img-inreview {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+
 .logo-small {
     height: 100px !important;
 }

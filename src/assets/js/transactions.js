@@ -49,7 +49,6 @@ function GetListOfTransactions() {
     })
     .then(dataResponse => {
       let htmlPrint = "";
-      const userInfo = JSON.parse(localStorage.getItem('user'));
       let transactionData = dataResponse.data
       for (let key in transactionData) {
         let text_type = "";
@@ -124,10 +123,10 @@ function GetListOfTransactions() {
                         </div>
                       </td>
                       <td class="border-bottom-0">
-                        <button onclick="ShowTransactionInformation(${transactionData[key].ID},'${transactionData[key].name}','${amount}')" type="button" class="btn btn-secondary p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_info">Confirm</button>
+                        <button onclick="ShowTransactionInformation(${transactionData[key].ID},'${transactionData[key].name}','${transactionData[key].amount}')" type="button" class="btn btn-secondary p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_info">Confirm</button>
                       </td>
                       <td class="border-bottom-0">
-                        <button onclick="CancelTransaction(${transactionData[key].ID},'${transactionData[key].name}','${amount}')" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_reject">Reject</button>
+                        <button onclick="CancelTransaction(${transactionData[key].ID},'${transactionData[key].name}','${transactionData[key].amount}')" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_reject">Reject</button>
                       </td>
                     </tr>
                   `;
@@ -145,7 +144,7 @@ $(document).ready(function () {
 })
 
 function ShowTransactionInformation(param_id, name, amount) {
-  let vndAmount = amount * goldRate
+  let vndAmount = Number(amount) * goldRate
   let html_text = `
   <p><span class="fw-semibold">ID:</span> ${param_id}</p>
   <p><span class="fw-semibold">Name:</span> ${name}</p>

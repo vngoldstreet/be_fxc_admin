@@ -35,7 +35,7 @@
         <div class="col-12 d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-4">List of Transactions</h5>
+              <h5 class="card-title fw-semibold mb-4">Competition Requests</h5>
               <div class="table-responsive table-option">
                 <table class="table text-nowrap mb-0 align-middle">
                   <thead class="text-dark fs-4 sticky-top bg-light">
@@ -80,16 +80,45 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="modal_transaction_info" tabindex="-1" aria-labelledby="exampleModalLabel"
+  <div class="modal modal-lg fade" id="modal_transaction_info" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Transaction information</h1>
+          <h2 class="modal-title fs-5" id="approval_title"></h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div id="transaction-information"></div>
+          <form action="" method="post">
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Contest ID</span>
+              <input id="inpContestID" type="text" class="form-control" placeholder="Contest ID" aria-label="Contest ID"
+                aria-describedby="basic-addon1" disabled>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">CustomerID</span>
+              <input id="inpCustomerID" type="text" class="form-control" placeholder="CustomerID"
+                aria-label="inpCustomerID" aria-describedby="basic-addon1" disabled>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25" id="basic-addon1">LoginID</span>
+              <input id="inpLoginID" type="number" class="form-control" placeholder="LoginID" aria-label="LoginID"
+                aria-describedby="basic-addon1" required>
+              <span id="fb_fx_id_text"></span>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25" id="basic-addon1">MasterPassword</span>
+              <input id="inpMasterPassword" type="text" class="form-control" placeholder="MasterPassword"
+                aria-label="MasterPassword" aria-describedby="basic-addon1" required>
+              <span id="fb_fx_master_password"></span>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25" id="basic-addon1">InvestorPassword</span>
+              <input id="inpInvestorPassword" type="text" class="form-control" placeholder="InvestorPassword"
+                aria-label="InvestorPassword" aria-describedby="basic-addon1" required>
+              <span id="fb_fx_invester_password"></span>
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
           <br>
@@ -126,7 +155,7 @@
   <script src="src/assets/js/app.min.js"></script>
   <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
-  <script src="src/assets/js/transactions.js"></script>
+  <script src="src/assets/js/competitions.js"></script>
   <script src="src/assets/js/header.js"></script>
   <script src="src/assets/js/sidebarmenu.js"></script>
 </body>

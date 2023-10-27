@@ -735,6 +735,70 @@ func createTransactions(c *gin.Context) {
 
 func getTransactions(c *gin.Context) {
 	trans := []CpsAdminTransactions{}
+	selectPromp := `cps_transactions.id as id,
+                  cps_transactions.customer_id as customer_id,
+                  cps_transactions.amount as amount,
+                  cps_transactions.status_id as status_id,
+				  cps_transactions.type_id as type_id,
+                  cps_users.name as name,
+                  cps_users.phone as phone,
+                  cps_users.email as email,
+                  cps_transactions.created_at as created_at,
+                  cps_transactions.updated_at as updated_at`
+	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id = 1 and type_id <> 4").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": trans})
+}
+
+func getCompetitionRequest(c *gin.Context) {
+	trans := []CpsAdminTransactions{}
+	selectPromp := `cps_transactions.id as id,
+                  cps_transactions.customer_id as customer_id,
+                  cps_transactions.amount as amount,
+                  cps_transactions.status_id as status_id,
+				  cps_transactions.type_id as type_id,
+				  cps_transactions.contest_id as contest_id,
+                  cps_users.name as name,
+				  cps_users.id as customer_id,
+                  cps_users.phone as phone,
+                  cps_users.email as email,
+                  cps_transactions.created_at as created_at,
+                  cps_transactions.updated_at as updated_at`
+	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id = 1 and type_id = 4").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": trans})
+}
+
+func getCompetitionRequestHistory(c *gin.Context) {
+	trans := []CpsAdminTransactions{}
+	selectPromp := `cps_transactions.id as id,
+                  cps_transactions.customer_id as customer_id,
+                  cps_transactions.amount as amount,
+                  cps_transactions.status_id as status_id,
+				  cps_transactions.type_id as type_id,
+				  cps_transactions.contest_id as contest_id,
+                  cps_users.name as name,
+				  cps_users.id as customer_id,
+                  cps_users.phone as phone,
+                  cps_users.email as email,
+                  cps_transactions.created_at as created_at,
+                  cps_transactions.updated_at as updated_at`
+	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id <> 1 and type_id = 4").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": trans})
+}
+
+func getHistoryTransactions(c *gin.Context) {
+	trans := []CpsAdminTransactions{}
 	// if err := db_ksc.Model(CpsTransactions{}).Where("status_id = 1 and type_id <> 4").Find(&trans).Error; err != nil {
 	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	// 	return
@@ -749,7 +813,7 @@ func getTransactions(c *gin.Context) {
                   cps_users.email as email,
                   cps_transactions.created_at as created_at,
                   cps_transactions.updated_at as updated_at`
-	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id = 1 and type_id <> 4").Find(&trans).Error; err != nil {
+	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id <> 1 and type_id <> 4").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
 		return
@@ -757,18 +821,9 @@ func getTransactions(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": trans})
 }
 
-func getHistoryTransactions(c *gin.Context) {
-	trans := []CpsTransactions{}
-	if err := db_ksc.Model(CpsTransactions{}).Where("status_id in (2,3,4)").Order("id desc").Find(&trans).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": trans})
-}
-
 func getContestList(c *gin.Context) {
-	datas := []Contests{}
-	if err := db_ksc.Model(Contests{}).Where("status_id = 0").Order("id desc").Find(&datas).Error; err != nil {
+	datas := []ListContests{}
+	if err := db_ksc.Model(ListContests{}).Where("status_id in (0,1)").Order("id desc").Find(&datas).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -776,8 +831,8 @@ func getContestList(c *gin.Context) {
 }
 
 func getHistoryContestList(c *gin.Context) {
-	datas := []Contests{}
-	if err := db_ksc.Model(Contests{}).Where("status_id > 0").Order("id desc").Find(&datas).Error; err != nil {
+	datas := []ListContests{}
+	if err := db_ksc.Model(ListContests{}).Where("status_id > 1").Order("id desc").Find(&datas).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -785,11 +840,23 @@ func getHistoryContestList(c *gin.Context) {
 }
 
 func getReviewLists(c *gin.Context) {
-	datas := []CpsReviews{}
-	if err := db_ksc.Model(CpsReviews{}).Where("status <> ?", "done").Order("id desc").Find(&datas).Error; err != nil {
+	datas := []CpsAdminReviews{}
+	selectPromp := `cps_reviews.id as id,
+                  cps_reviews.customer_id as customer_id,
+                  cps_reviews.image_front as image_front,
+                  cps_reviews.image_back as image_back,
+				  cps_reviews.status as status,
+                  cps_users.name as name,
+                  cps_users.phone as phone,
+                  cps_users.email as email,
+                  cps_reviews.created_at as created_at,
+                  cps_reviews.updated_at as updated_at`
+	if err := db_ksc.Model(&CpsReviews{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_reviews.customer_id = cps_users.id").Where("status <> ?", "done").Order("cps_reviews.id desc").Find(&datas).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"data": datas})
 }
 

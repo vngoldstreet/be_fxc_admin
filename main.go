@@ -30,9 +30,34 @@ func main() {
 			"title": "Transactions",
 		})
 	})
-	r.GET("/transaction-history", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "transaction-history.html", gin.H{
-			"title": "History",
+	r.GET("/transactions-history", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "transactions-history.html", gin.H{
+			"title": "History of Transaction",
+		})
+	})
+	r.GET("/competitions", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "competitions.html", gin.H{
+			"title": "Competitions",
+		})
+	})
+	r.GET("/competitions-history", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "competitions-history.html", gin.H{
+			"title": "History of Competitions",
+		})
+	})
+	r.GET("/contests", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "contests.html", gin.H{
+			"title": "Contests",
+		})
+	})
+	r.GET("/contests-history", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "contests-history.html", gin.H{
+			"title": "History of Contests",
+		})
+	})
+	r.GET("/customer-review", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "inreviews.html", gin.H{
+			"title": "Customer inreviews",
 		})
 	})
 	public := r.Group("/public")
@@ -42,18 +67,20 @@ func main() {
 	private := r.Group("/auth")
 	private.Use(JwtAuthMiddleware())
 	private.POST("/upload-csv", upLoadFunc)
-	private.POST("/update-contest-id", updateContestByID)
-	private.POST("/create-contest", createContest)
-	private.POST("/contest-approval", approvalContest)
-	private.POST("/admin-transaction", approvalTransactions) //done
-	private.POST("/cancel-transaction", cancelTransactions)  //done
-	private.POST("/create-transaction", createTransactions)
-	private.GET("/get-transaction-list", getTransactions) //done
-	private.GET("/get-history-transaction-list", getHistoryTransactions)
-	private.GET("/get-contest-list", getContestList)
-	private.GET("/get-history-contest-list", getHistoryContestList)
-	private.GET("/get-review-list", getReviewLists)
-	private.POST("/update-review-list", updateReviewLists)
-	r.Run(":8081")
 
+	private.POST("/create-contest", createContest)
+	private.POST("/create-transaction", createTransactions)
+	private.POST("/update-contest-id", updateContestByID)                              //done
+	private.POST("/contest-approval", approvalContest)                                 //done
+	private.POST("/admin-transaction", approvalTransactions)                           //done
+	private.POST("/cancel-transaction", cancelTransactions)                            //done
+	private.GET("/get-transaction-list", getTransactions)                              //done
+	private.GET("/get-history-transaction-list", getHistoryTransactions)               //done
+	private.GET("/get-competition-request-list", getCompetitionRequest)                //done
+	private.GET("/get-history-competition-request-list", getCompetitionRequestHistory) //done
+	private.GET("/get-contest-list", getContestList)                                   //done
+	private.GET("/get-history-contest-list", getHistoryContestList)                    //done
+	private.GET("/get-review-list", getReviewLists)                                    //done
+	private.POST("/update-review-list", updateReviewLists)                             //done
+	r.Run(":8081")
 }

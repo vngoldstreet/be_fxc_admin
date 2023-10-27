@@ -28,6 +28,17 @@ type CpsReviews struct {
 	Status     string `json:"status"`
 }
 
+type CpsAdminReviews struct {
+	gorm.Model
+	CustomerID uint   `json:"customer_id"`
+	ImageFront string `json:"image_front"`
+	ImageBack  string `json:"image_back"`
+	Status     string `json:"status"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
+}
+
 // Users
 type CpsAdmins struct {
 	gorm.Model

@@ -35,16 +35,13 @@
         <div class="col-12 d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-4">List of Transactions</h5>
-              <div class="table-responsive table-option">
+              <h5 class="card-title fw-semibold mb-4">Inreview Requests</h5>
+              <div class="table-responsive">
                 <table class="table text-nowrap mb-0 align-middle">
                   <thead class="text-dark fs-4 sticky-top bg-light">
                     <tr>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">ID/TranID</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Type</h6>
+                        <h6 class="fw-semibold mb-0">ID</h6>
                       </th>
                       <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Created/Updated</h6>
@@ -53,16 +50,16 @@
                         <h6 class="fw-semibold mb-0">Name/Phone/Email</h6>
                       </th>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Amount</h6>
+                        <h6 class="fw-semibold mb-0">FrontImage</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">BackImage</h6>
                       </th>
                       <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Status</h6>
                       </th>
                       <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Confirmation</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Rejection</h6>
                       </th>
                     </tr>
                   </thead>
@@ -79,54 +76,63 @@
     </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="modal_transaction_info" tabindex="-1" aria-labelledby="exampleModalLabel"
+  <div class="modal modal-xl fade" id="modal_image" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Transaction information</h1>
+          <h2 class="modal-title fs-5" id="how_img_title"></h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div id="transaction-information"></div>
+          <img class="img-inreview" id="img-to-show" alt="">
         </div>
         <div class="modal-footer">
           <br>
-          <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
-          <button id="confirm_for_transaction" type="button" class="btn btn-secondary">Confirmation</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          <!-- <button id="confirm_for_transaction" type="button" class="btn btn-secondary">Confirmation</button> -->
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="modal_transaction_reject" tabindex="-1" aria-labelledby="exampleModalLabel"
+  <div class="modal modal-lg fade" id="modal_confirm_image" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Transaction information</h1>
+          <h2 class="modal-title fs-5" id="cfm_title"></h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div id="transaction-information-reject"></div>
+          <form action="" method="post">
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">CustomerID</span>
+              <input id="inpCustomerID" type="text" class="form-control" placeholder="inpCustomerID"
+                aria-label="inpCustomerID" aria-describedby="basic-addon1" disabled>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Status</span>
+              <input id="inpStatus" type="text" class="form-control" placeholder="inpStatus" aria-label="inpStatus"
+                aria-describedby="basic-addon1" disabled>
+            </div>
+          </form>
+          <span id="msg_inreview"></span>
         </div>
         <div class="modal-footer">
           <br>
           <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
-          <button id="reject_for_transaction" type="button" class="btn btn-danger">Rejection</button>
+          <button id="confirm_for_inreview" type="button" class="btn btn-secondary">Confirmation</button>
         </div>
       </div>
     </div>
   </div>
-
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="src/assets/js/app.min.js"></script>
   <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
-  <script src="src/assets/js/transactions.js"></script>
+  <script src="src/assets/js/inreviews.js"></script>
   <script src="src/assets/js/header.js"></script>
   <script src="src/assets/js/sidebarmenu.js"></script>
 </body>
