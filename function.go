@@ -152,7 +152,7 @@ func upLoadFunc(c *gin.Context) {
 			continue
 		}
 		record := strings.Split(line[0], ";")
-		if removeSpecialChars(record[4]) != "" {
+		if removeSpecialChars(record[5]) != "" {
 			balance, _ := strconv.ParseFloat(removeSpecialChars(record[6]), 64)
 			equity, _ := strconv.ParseFloat(removeSpecialChars(record[7]), 64)
 			profit, _ := strconv.ParseFloat(removeSpecialChars(record[8]), 64)
@@ -162,8 +162,8 @@ func upLoadFunc(c *gin.Context) {
 				Name:       removeSpecialChars(record[1]),
 				LastName:   removeSpecialChars(record[2]),
 				MiddleName: removeSpecialChars(record[3]),
-				ContestID:  removeSpecialChars(record[4]),
-				Email:      removeSpecialChars(record[5]),
+				Email:      removeSpecialChars(record[4]),
+				ContestID:  removeSpecialChars(record[5]), //comment
 				Balance:    balance,
 				Equity:     equity,
 				Profit:     profit,
@@ -188,16 +188,9 @@ func upLoadFunc(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		newData := []RawMT5Datas{}
-		for _, new := range newUpload {
-			if new.ContestID == v.ContestID {
-				newData = append(newData, new)
-			}
-		}
-
-		for _, new := range newData {
-			// idx := false
-			for _, current := range currentData {
+		for _, current := range currentData {
+			for _, new := range newUpload {
+				fmt.Printf("new.Login: %v - Current: %v\n", new.Login, current.Login)
 				if current.Login == new.Login {
 					updates := RawMT5Datas{
 						Name:       new.Name,
@@ -242,8 +235,10 @@ func upLoadFunc(c *gin.Context) {
 		}
 	}
 	c.JSON(200, gin.H{
-		"update": updated,
-		"new":    newDataToCreates,
+		"contest":     listContest,
+		"data_upload": newUpload,
+		"update":      updated,
+		"new":         newDataToCreates,
 	})
 }
 
