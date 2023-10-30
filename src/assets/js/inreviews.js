@@ -1,5 +1,5 @@
-// const baseUrl = "https://admin.fxchampionship.com";
-const baseUrl = "http://localhost:8081";
+const baseUrl = "https://admin.fxchampionship.com";
+// const baseUrl = "http://localhost:8081";
 const urlInreviewList = baseUrl + "/auth/get-review-list";
 const urlInreviewUpdate = baseUrl + "/auth/update-review-list";
 const goldRate = 24000;

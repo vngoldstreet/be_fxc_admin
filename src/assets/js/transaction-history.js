@@ -1,5 +1,5 @@
-// const baseUrl = "https://admin.fxchampionship.com";
-const baseUrl = "http://localhost:8081";
+const baseUrl = "https://admin.fxchampionship.com";
+// const baseUrl = "http://localhost:8081";
 const urlTransactionList = baseUrl + "/auth/get-history-transaction-list";
 const goldRate = 24000;
 

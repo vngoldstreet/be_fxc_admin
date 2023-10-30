@@ -1,5 +1,5 @@
-// const baseUrl = "https://admin.fxchampionship.com";
-const baseUrl = "http://localhost:8081";
+const baseUrl = "https://admin.fxchampionship.com";
+// const baseUrl = "http://localhost:8081";
 const apiLoginUrl = baseUrl + "/public/login";
 $(document).ready(function () {
     $("#submit_form_login").click(function () {

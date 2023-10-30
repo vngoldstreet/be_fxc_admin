@@ -1,5 +1,5 @@
-// const baseUrl = "https://admin.fxchampionship.com";
-const baseUrl = "http://localhost:8081";
+const baseUrl = "https://admin.fxchampionship.com";
+// const baseUrl = "http://localhost:8081";
 const urlTransactionList = baseUrl + "/auth/get-competition-request-list";
 const urlCreateALoginID = baseUrl + "/auth/contest-approval";
 const urlConfirmationTransactions = baseUrl + "/auth/admin-transaction";
