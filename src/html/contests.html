@@ -35,7 +35,13 @@
         <div class="col-12 d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-4">List of Contests</h5>
+              <div class="d-flex flex-row mb-3 justify-content-between">
+                <h5 class="card-title fw-semibold mb-4">List of Contests</h5>
+                <button type="button" class="btn btn-secondary pt-0 pb-0" data-bs-toggle="modal"
+                  data-bs-target="#modal_create_contest">Create a
+                  contest</button>
+              </div>
+
               <div class="table-responsive table-option">
                 <table class="table text-nowrap mb-0 align-middle">
                   <thead class="text-dark fs-4 sticky-top bg-light">
@@ -112,6 +118,58 @@
           <br>
           <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
           <button id="confirm_for_contest" type="button" class="btn btn-secondary">Confirmation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal-lg fade" id="modal_create_contest" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="approval_title"></h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post">
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Amount</span>
+              <input value="100" id="inpAmount" type="number" class="form-control" placeholder="Amount"
+                aria-label="Amount" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Maximum Person</span>
+              <input value="100" id="inpMaximumPerson" type="number" class="form-control" placeholder="Maximum Person"
+                aria-label="Maximum Person" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Start Balance</span>
+              <input value="100" id="inpStartBalance" type="number" class="form-control" placeholder="Start Balance"
+                aria-label="Start Balance" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Start At</span>
+              <input id="inpStartAt" type="datetime-local" class="form-control" placeholder="Start At"
+                aria-label="Start At" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Expire At</span>
+              <input id="inpExpireAt" type="datetime-local" class="form-control" placeholder="Expire At"
+                aria-label="Expire At" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">StatusID</span>
+              <input value="0" id="inpStatusID" type="number" class="form-control" placeholder="inpStatusID"
+                aria-label="inpStatusID" aria-describedby="basic-addon1">
+            </div>
+          </form>
+          <span id="fb_msg_create"></span>
+        </div>
+        <div class="modal-footer">
+          <br>
+          <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
+          <button id="create_contest" type="button" class="btn btn-secondary">Create a Contest</button>
         </div>
       </div>
     </div>

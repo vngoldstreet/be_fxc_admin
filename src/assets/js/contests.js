@@ -118,7 +118,75 @@ function GetListOfContests() {
 
 $(document).ready(function () {
   GetListOfContests()
+
+  $("#create_contest").click(function () {
+    let amount = $("#inpAmount").val()
+    let max_person = $("#inpMaximumPerson").val()
+    let start_balance = $("#inpStartBalance").val()
+    let start_at = $("#inpStartAt").val()
+    let expired_at = $("#inpExpireAt").val()
+    let status_id = $("#inpStatusID").val()
+
+    var datestart = new Date(start_at);
+    datestart.setHours(datestart.getHours() + 7);
+    var extractedDateStart = datestart.toISOString().split('T')[0];
+    var extractedTimeStart = datestart.toISOString().split('T')[1].split('Z')[0];
+    var time_start_at = extractedDateStart + " " + extractedTimeStart
+
+    var dateend = new Date(expired_at);
+    dateend.setHours(dateend.getHours() + 7);
+    var extractedDateEnd = dateend.toISOString().split('T')[0];
+    var extractedTimeEnd = dateend.toISOString().split('T')[1].split('Z')[0];
+    var time_end = extractedDateEnd + " " + extractedTimeEnd
+
+    const inpCreate = {
+      "amount": Number(amount),
+      "maximum_person": Number(max_person),
+      "start_balance": Number(start_balance),
+      "start_at": time_start_at,
+      "expired_at": time_end,
+      "status_id": Number(status_id),
+    };
+
+    console.log(JSON.stringify(inpCreate))
+
+    const jwtToken = getCookie("token");
+    if (!jwtToken) {
+      console.error("Error: JWT token is missing.");
+      return;
+    }
+
+    const headers = new Headers({
+      'Authorization': `Bearer ${jwtToken}`
+    });
+
+    fetch("http://localhost:8081/auth/create-contest", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(inpCreate),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not successful");
+        }
+        return response.json(); // Parse the response JSON if needed
+      })
+      .then(dataResponse => {
+        let stringData = JSON.stringify(dataResponse)
+        let html = `<code class='w-100 text-success'>${stringData}</code>`
+        $("#fb_msg_create").removeClass().addClass("fw-semibold");
+        $("#fb_msg_create").html(html);
+        GetListOfContests()
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+  })
 })
+
+function CreateAContest() {
+
+}
 
 function EditingContest(contest_id, status_id) {
   $("#approval_title").text(`Update for this competition: ${contest_id}`)
@@ -166,3 +234,5 @@ function EditingContest(contest_id, status_id) {
       });
   });
 }
+
+
