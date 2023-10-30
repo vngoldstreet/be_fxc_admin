@@ -61,7 +61,7 @@ func main() {
 		})
 	})
 	public := r.Group("/public")
-	// public.POST("/register", Register)
+	public.POST("/register", Register)
 	public.POST("/login", Login)
 
 	private := r.Group("/auth")
