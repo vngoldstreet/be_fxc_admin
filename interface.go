@@ -211,13 +211,26 @@ type CpsMessages struct {
 }
 
 func removeSpecialChars(input string) string {
-	regex := regexp.MustCompile("[^a-zA-Z0-9@.,]")
+	allowedChars := regexp.MustCompile(`[a-zA-Z0-9@,.\sáàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\-+/*]+`)
 
-	// Sử dụng ReplaceAllString để thay thế tất cả các ký tự đặc biệt bằng dấu trống
-	result := regex.ReplaceAllString(input, "")
+	// Loại bỏ tất cả các ký tự khác
+	replaced := allowedChars.FindAllString(input, -1)
+	result := ""
+	for _, s := range replaced {
+		result += s
+	}
 
 	return result
 }
+
+// func removeSpecialChars(input string) string {
+// 	regex := regexp.MustCompile("[^a-zA-Z0-9@.,]")
+
+// 	// Sử dụng ReplaceAllString để thay thế tất cả các ký tự đặc biệt bằng dấu trống
+// 	result := regex.ReplaceAllString(input, "")
+
+// 	return result
+// }
 
 type RawMT5Datas struct {
 	gorm.Model

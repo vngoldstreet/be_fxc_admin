@@ -153,10 +153,10 @@ func upLoadFunc(c *gin.Context) {
 		}
 		record := strings.Split(line[0], ";")
 		if removeSpecialChars(record[5]) != "" {
-			balance, _ := strconv.ParseFloat(removeSpecialChars(record[6]), 64)
-			equity, _ := strconv.ParseFloat(removeSpecialChars(record[7]), 64)
-			profit, _ := strconv.ParseFloat(removeSpecialChars(record[8]), 64)
-			floating, _ := strconv.ParseFloat(removeSpecialChars(record[9]), 64)
+			balance, _ := strconv.ParseFloat(record[6], 64)
+			equity, _ := strconv.ParseFloat(record[7], 64)
+			profit, _ := strconv.ParseFloat(record[8], 64)
+			floating, _ := strconv.ParseFloat(record[9], 64)
 			data := RawMT5Datas{
 				Login:      removeSpecialChars(record[0]),
 				Name:       removeSpecialChars(record[1]),
