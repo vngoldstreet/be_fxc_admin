@@ -50,7 +50,7 @@ func LoginCheck(email string, password string) (string, CpsAdmins, error) {
 // Save user and first create
 func SaveUser(u CpsAdmins) error {
 	user := CpsAdmins{}
-	resp := db_ksc.Model(CpsAdmins{}).Where("email = ? or phone = ?", u.Email, u.Phone).Find(&user)
+	resp := db_ksc.Model(CpsAdmins{}).Where("email = ?", u.Email).Find(&user)
 	if resp.RowsAffected > 0 {
 		err := errors.New("account has been taken")
 		return err
