@@ -62,7 +62,7 @@ func main() {
 	})
 	r.GET("/uploader", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "leaderboard.html", gin.H{
-			"title": "Customer inreviews",
+			"title": "Upload",
 		})
 	})
 	public := r.Group("/public")
