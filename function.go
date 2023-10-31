@@ -101,6 +101,7 @@ func NumberToString(n int, sep rune) string {
 func upLoadFunc(c *gin.Context) {
 	fileUpload, header, err := c.Request.FormFile("file")
 	if err != nil {
+		fmt.Printf("err upload: %v\n", err)
 		c.String(400, "Bad Request")
 		return
 	}
@@ -190,7 +191,7 @@ func upLoadFunc(c *gin.Context) {
 		}
 		for _, current := range currentData {
 			for _, new := range newUpload {
-				fmt.Printf("new.Login: %v - Current: %v\n", new.Login, current.Login)
+				// fmt.Printf("new.Login: %v - Current: %v\n", new.Login, current.Login)
 				if current.Login == new.Login {
 					updates := RawMT5Datas{
 						Name:       new.Name,

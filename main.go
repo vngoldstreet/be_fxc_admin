@@ -60,6 +60,11 @@ func main() {
 			"title": "Customer inreviews",
 		})
 	})
+	r.GET("/uploader", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "leaderboard.html", gin.H{
+			"title": "Customer inreviews",
+		})
+	})
 	public := r.Group("/public")
 	public.POST("/register", Register)
 	public.POST("/login", Login)

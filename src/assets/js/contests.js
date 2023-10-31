@@ -2,6 +2,7 @@ const baseUrl = "https://admin.fxchampionship.com";
 // const baseUrl = "http://localhost:8081";
 const urlContestList = baseUrl + "/auth/get-contest-list";
 const urlUpdateContest = baseUrl + "/auth/update-contest-id";
+const urlCreatedContest = baseUrl + "/auth/create-contest";
 
 function getCookie(cookieName) {
   var name = cookieName + "=";
@@ -160,7 +161,7 @@ $(document).ready(function () {
       'Authorization': `Bearer ${jwtToken}`
     });
 
-    fetch("http://localhost:8081/auth/create-contest", {
+    fetch(urlCreatedContest, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(inpCreate),
@@ -179,6 +180,10 @@ $(document).ready(function () {
         GetListOfContests()
       })
       .catch(error => {
+        let stringData = JSON.stringify(dataResponse)
+        let html = `<code class='w-100 text-danger'>${stringData}</code>`
+        $("#fb_msg_create").removeClass().addClass("fw-semibold");
+        $("#fb_msg_create").html(html);
         console.error("Error:", error);
       });
   })

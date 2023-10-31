@@ -23,52 +23,15 @@
               <div class="card-body">
                 <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                   <div class="mb-3 mb-sm-0">
-                    <h5 class="card-title fw-semibold">Competition Leaderboard</h5>
+                    <h5 class="card-title fw-semibold">Upload</h5>
                   </div>
                 </div>
-                <nav>
-                  <div class="nav nav-tabs" id="nav-tab-contest" role="tablist">
-
-                  </div>
-                </nav>
-                <div class="tab-content mt-2 border rounder" id="nav-tabContent">
-                  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"
-                    tabindex="0">
-                    <div class="table-responsive table-option">
-                      <table class="table mb-0 align-middle table-hover w-100">
-                        <thead class="fs-4">
-                          <tr>
-                            <th class="border-bottom-0">
-                              <h5 class="fw-semibold mb-0">Rank</h5>
-                            </th>
-                            <th class="border-bottom-0">
-                              <h5 class="fw-semibold mb-0">ContestID</h5>
-                            </th>
-                            <th class="border-bottom-0">
-                              <h5 class="fw-semibold mb-0">Account</h5>
-                            </th>
-                            <th class="border-bottom-0">
-                              <h5 class="fw-semibold mb-0">Email</h5>
-                            </th>
-                            <th class="border-bottom-0">
-                              <h5 class="fw-semibold mb-0">Balance</h5>
-                            </th>
-                            <th class="border-bottom-0">
-                              <h5 class="fw-semibold mb-0">Equity</h5>
-                            </th>
-                            <th class="border-bottom-0">
-                              <h5 class="fw-semibold mb-0">FloatingP/L</h5>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody id="leader_board_infor">
-
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                <div class="input-group mb-3">
+                  <input type="file" class="form-control" id="inputGroupFile02">
+                  <!-- <label class="input-group-text" for="inputGroupFile02">Upload</label> -->
+                  <button id="send_upload_file" type="button" class="btn btn-secondary">Upload</button>
                 </div>
-
+                <code id="fb_msg_create"></code>
               </div>
             </div>
           </div>
@@ -84,7 +47,7 @@
     <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
     <script src="src/assets/js/header.js"></script>
     <script src="src/assets/js/sidebarmenu.js"></script>
-    <script src="src/assets/js/leader-board.js"></script>
+    <script src="src/assets/js/upload.js"></script>
 </body>
 
 </html>
