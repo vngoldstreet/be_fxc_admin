@@ -46,11 +46,11 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																							<tr>
 																								<td align="center">
 																									<a href="https://fxchampionship.com" target="_blank" data-saferedirecturl="https://fxchampionship.com"><img
-																											src="https://fxchampionship.com/src/assets/images/logos/android-chrome-512x512.png"
+																											src="https://crm.fxchampionship.com/src/assets/images/logos/android-chrome-512x512.png"
 																											width="160" height="160"
 																											style="margin:0;padding:0;border:none;display:block"
 																											border="0"
-																											alt=""
+																											alt="FXChampionship"
 																											class="CToWUd"
 																											data-bit="iit">
 																									</a>
@@ -264,11 +264,11 @@ func SendEmailForRegister(toEmail string, account string, user_password string) 
                                                                                 <a href="https://fxchampionship.com"
                                                                                     target="_blank"
                                                                                     data-saferedirecturl="https://fxchampionship.com"><img
-                                                                                        src="https://fxchampionship.com/src/assets/images/logos/android-chrome-512x512.png"
+                                                                                        src="https://crm.fxchampionship.com/src/assets/images/logos/android-chrome-512x512.png"
                                                                                         width="160" height="160"
                                                                                         style="margin:0;padding:0;border:none;display:block"
                                                                                         border="0"
-                                                                                        alt="FxPro - Trade Like a Pro"
+                                                                                        alt="FxChampionship"
                                                                                         class="CToWUd"
                                                                                         data-bit="iit"></a>
                                                                             </td>
