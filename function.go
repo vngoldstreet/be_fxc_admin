@@ -394,12 +394,20 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
+	listContest := ListContests{}
+	if err := db_ksc.Model(&listContest).Where("contest_id = ?", input.ContestID).Find(&listContest).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	strLogin := fmt.Sprintf("%d", input.FxID)
 	newLeaderBoard := RawMT5Datas{
 		Login:     strLogin,
 		Name:      user.Name,
 		Email:     user.Email,
 		ContestID: input.ContestID,
+		Balance:   float64(listContest.StartBalance),
+		Equity:    float64(listContest.StartBalance),
 	}
 
 	if err := db_ksc.Save(&newLeaderBoard).Error; err != nil {
