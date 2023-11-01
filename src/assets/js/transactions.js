@@ -50,6 +50,7 @@ function GetListOfTransactions() {
     .then(dataResponse => {
       let htmlPrint = "";
       let transactionData = dataResponse.data
+      console.log(transactionData)
       for (let key in transactionData) {
         let text_type = "";
         let text_id_contest = "";
@@ -112,6 +113,11 @@ function GetListOfTransactions() {
                         <span class="fw-normal">${transactionData[key].name}</span> <br>
                         <span class="fw-normal">${transactionData[key].email}</span><br>
                         <span class="fw-normal">${transactionData[key].phone}</span>
+                      </td>
+                      <td class="border-bottom-0">
+                        <span class="fw-normal">${transactionData[key].bank_name}</span> <br>
+                        <span class="fw-normal">${transactionData[key].holder_name}</span><br>
+                        <span class="fw-normal">${transactionData[key].holder_number}</span>
                       </td>
                       <td class="border-bottom-0">
                         <span class="fw-normal mb-0">${amount} G</span> <br>

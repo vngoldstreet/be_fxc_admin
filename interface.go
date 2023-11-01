@@ -105,6 +105,9 @@ type CpsAdminTransactions struct {
 	Name          string  `json:"name"`
 	Email         string  `json:"email"`
 	Phone         string  `json:"phone"`
+	HolderName    string  `json:"holder_name"`
+	HolderNumber  string  `json:"holder_number"`
+	BankName      string  `json:"bank_name"`
 }
 
 type CpsTransactionTypes struct {

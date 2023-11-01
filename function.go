@@ -738,12 +738,17 @@ func getTransactions(c *gin.Context) {
                   cps_transactions.amount as amount,
                   cps_transactions.status_id as status_id,
 				  cps_transactions.type_id as type_id,
+				  cps_transactions.payment_methob as payment_methob,
                   cps_users.name as name,
                   cps_users.phone as phone,
                   cps_users.email as email,
                   cps_transactions.created_at as created_at,
-                  cps_transactions.updated_at as updated_at`
-	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id = 1 and type_id <> 4").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
+                  cps_transactions.updated_at as updated_at,
+				 cps_payment_methobs.holder_name as holder_name, 
+				 cps_payment_methobs.holder_number as holder_number, 
+				 cps_payment_methobs.bank_name as bank_name
+				  `
+	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Joins("INNER JOIN cps_payment_methobs on cps_payment_methobs.id = cps_transactions.payment_methob").Where("status_id = 1 and type_id <> 4").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
 		return
