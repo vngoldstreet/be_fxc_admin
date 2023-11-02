@@ -226,7 +226,7 @@ function ApprovalRejoinToContest(contest_id, customer_id) {
   const headers = new Headers({
     'Authorization': `Bearer ${jwtToken}`
   });
-  console.log(JSON.stringify(inpApproval))
+  // console.log(JSON.stringify(inpApproval))
   fetch(urlRejoinToContest, {
     method: "POST",
     headers: headers,
