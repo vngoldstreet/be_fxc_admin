@@ -175,7 +175,7 @@ type Contests struct {
 	gorm.Model
 	ContestID    string `json:"contest_id"`
 	CustomerID   uint   `json:"customer_id"`
-	FxID         uint   `json:"fx_id"`
+	FxID         string `json:"fx_id"`
 	FxMasterPw   string `json:"fx_master_pw"`
 	FxInvesterPw string `json:"fx_invester_pw"`
 	StatusID     int    `json:"status_id" gorm:"default:0"`
