@@ -69,6 +69,10 @@ function GetListOfTransactions() {
             text_type = "Join a contest";
             text_id_contest = `${transactionData[key].contest_id}`;
             break;
+          case 6:
+            text_type = "Re-Join a contest";
+            text_id_contest = `${transactionData[key].contest_id}`;
+            break;
           default:
             break;
         }
