@@ -402,9 +402,8 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
-	strLogin := fmt.Sprintf("%d", input.FxID)
 	newLeaderBoard := RawMT5Datas{
-		Login:     strLogin,
+		Login:     input.FxID,
 		Name:      user.Name,
 		Email:     user.Email,
 		ContestID: input.ContestID,
@@ -417,14 +416,14 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
-	formatMessage := "Approved a customer's participation in the contest: %s\nCustomer: %s (%d - %s)\nFxID: %d\nFxInvesterPw: %s"
+	formatMessage := "Approved a customer's participation in the contest: %s\nCustomer: %s (%d - %s)\nFxID: %s\nFxInvesterPw: %s"
 	msg := fmt.Sprintf(formatMessage, input.ContestID, user.Name, input.CustomerID, user.Email, currentContest.FxID, currentContest.FxInvesterPw)
 
 	if err := SaveToMessages(1, msg); err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	SendEmailForContest(user.Email, input.ContestID, strLogin, currentContest.FxMasterPw, currentContest.FxInvesterPw)
+	SendEmailForContest(user.Email, input.ContestID, input.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw)
 	//Delete from redis
 	keysToDelete := []string{}
 	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
