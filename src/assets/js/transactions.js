@@ -1,5 +1,5 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
+// const baseUrl = "https://admin.fxchampionship.com";
+const baseUrl = "http://localhost:8081";
 const urlTransactionList = baseUrl + "/auth/get-transaction-list";
 const urlConfirmationTransactions = baseUrl + "/auth/admin-transaction";
 const urlRejectTransactions = baseUrl + "/auth/cancel-transaction";
@@ -35,7 +35,6 @@ function GetListOfTransactions() {
     "Content-Type": "application/json",
     'Authorization': `Bearer ${jwtToken}`
   });
-
   fetch(urlTransactionList, {
     method: "GET",
     headers: headers
