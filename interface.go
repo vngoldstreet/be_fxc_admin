@@ -246,5 +246,5 @@ type RawMT5Datas struct {
 	Balance    float64 `json:"balance"`
 	Equity     float64 `json:"equity"`
 	Profit     float64 `json:"profit"`
-	FloatingPL float64 `json:"floating"`
+	FloatingPL float64 `json:"floating_pl"`
 }
