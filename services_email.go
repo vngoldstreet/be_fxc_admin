@@ -110,7 +110,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																										Server:</td>
 																									<td
 																										style="font:400 20px/28px roboto,helvetica,sans-serif;color:#000000;padding:0;margin:0">
-																										FXU Solution</td>
+																										FXU Solutions Limited (FXUSolutions)</td>
 																								</tr>
 																							</tbody>
 																						</table>
