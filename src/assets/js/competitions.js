@@ -61,12 +61,14 @@ function GetListOfTransactions() {
             text_type = "Withdrawal";
             break;
           case 3:
-          case 5:
-            text_type = "Earning";
+            text_type = "Promo";
             break;
           case 4:
             text_type = "Join a contest";
             text_id_contest = `${transactionData[key].contest_id}`;
+            break;
+          case 5:
+            text_type = "Earning";
             break;
           case 6:
             text_type = "Re-Join a contest";

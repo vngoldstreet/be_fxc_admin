@@ -792,7 +792,7 @@ func getCompetitionRequestHistory(c *gin.Context) {
                   cps_users.email as email,
                   cps_transactions.created_at as created_at,
                   cps_transactions.updated_at as updated_at`
-	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id <> 1 and type_id = 4").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
+	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id <> 1 and type_id in (4,6)").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
 		return
