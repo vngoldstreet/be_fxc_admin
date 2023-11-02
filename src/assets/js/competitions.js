@@ -1,7 +1,8 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
+// const baseUrl = "https://admin.fxchampionship.com";
+const baseUrl = "http://localhost:8081";
 const urlTransactionList = baseUrl + "/auth/get-competition-request-list";
 const urlCreateALoginID = baseUrl + "/auth/contest-approval";
+const urlRejoinToContest = baseUrl + "/auth/rejoin-contest-approval";
 const urlConfirmationTransactions = baseUrl + "/auth/admin-transaction";
 const urlRejectTransactions = baseUrl + "/auth/cancel-transaction";
 const goldRate = 24000;
@@ -53,6 +54,8 @@ function GetListOfTransactions() {
       for (let key in transactionData) {
         let text_type = "";
         let text_id_contest = "";
+        let btn_confirm = ""
+
         switch (transactionData[key].type_id) {
           case 1:
             text_type = "Deposit";
@@ -66,6 +69,7 @@ function GetListOfTransactions() {
           case 4:
             text_type = "Join a contest";
             text_id_contest = `${transactionData[key].contest_id}`;
+            btn_confirm = `<button onclick="ShowTransactionInformation(${transactionData[key].ID},${transactionData[key].customer_id},'${text_id_contest}','${transactionData[key].name}')" type="button" class="btn btn-secondary p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_info">Accept to Join</button>`
             break;
           case 5:
             text_type = "Earning";
@@ -73,6 +77,7 @@ function GetListOfTransactions() {
           case 6:
             text_type = "Re-Join a contest";
             text_id_contest = `${transactionData[key].contest_id}`;
+            btn_confirm = `<button onclick="ShowRejoin(${transactionData[key].ID},${transactionData[key].customer_id},'${text_id_contest}','${transactionData[key].name}')" type="button" class="btn btn-outline-success p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_rejoin">Accept to Re-Join</button>`
             break;
           default:
             break;
@@ -102,6 +107,7 @@ function GetListOfTransactions() {
         const number = Number(key) + 1;
         const amount = Number(transactionData[key].amount).toLocaleString();
         let vndAmount = Number(transactionData[key].amount) * goldRate
+
         htmlPrint += `
                     <tr>
                       <td class="border-bottom-0">
@@ -129,7 +135,7 @@ function GetListOfTransactions() {
                         </div>
                       </td>
                       <td class="border-bottom-0">
-                        <button onclick="ShowTransactionInformation(${transactionData[key].ID},${transactionData[key].customer_id},'${text_id_contest}','${transactionData[key].name}')" type="button" class="btn btn-secondary p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_info">Confirm</button>
+                        ${btn_confirm}
                       </td>
                       <td class="border-bottom-0">
                         <button onclick="CancelTransaction(${transactionData[key].ID},'${transactionData[key].name}','${amount}','${text_id_contest}')" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_transaction_reject">Reject</button>
@@ -192,6 +198,55 @@ function ShowTransactionInformation(param_id, customer_id, contest_id, name) {
     CreateMetaTraderData(contest_id, customer_id, fx_id, fx_master_password, fx_investor_password)
     ConfirmTransaction(param_id);
   });
+}
+
+function ShowRejoin(param_id, customer_id, contest_id, name) {
+  $("#approval_title_rejoin").text(`Approval for this competition: ${contest_id}`)
+  $("#inpContestIDRejoin").attr("value", contest_id)
+  $("#inpCustomerIDRejoin").attr("value", `${customer_id} - ${name}`)
+
+  $("#confirm_for_rejoin").click(function () {
+    ApprovalRejoinToContest(contest_id, customer_id)
+    ConfirmTransaction(param_id);
+  });
+}
+
+function ApprovalRejoinToContest(contest_id, customer_id) {
+  let jwtToken = getCookie("token");
+  if (!jwtToken) {
+    console.error("Error: JWT token is missing.");
+    return;
+  }
+
+  let inpApproval = {
+    "contest_id": contest_id,
+    "customer_id": customer_id
+  };
+
+  const headers = new Headers({
+    'Authorization': `Bearer ${jwtToken}`
+  });
+  console.log(JSON.stringify(inpApproval))
+  fetch(urlRejoinToContest, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(inpApproval),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not successful");
+      }
+      return response.json(); // Parse the response JSON if needed
+    })
+    .then(dataResponse => {
+      let stringData = JSON.stringify(dataResponse)
+      let html = `<code class='w-100 text-success'>${stringData}</code>`
+      $("#re_join_contest_message").removeClass().addClass("fw-semibold");
+      $("#re_join_contest_message").html(html);
+    })
+    .catch(error => {
+      console.error("Error:", error);
+    });
 }
 
 function CreateMetaTraderData(contest_id, customer_id, fx_id, fx_master_password, fx_investor_password) {

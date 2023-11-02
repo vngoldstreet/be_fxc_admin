@@ -77,6 +77,7 @@ func main() {
 	private.POST("/create-transaction", createTransactions)
 	private.POST("/update-contest-id", updateContestByID)                              //done
 	private.POST("/contest-approval", approvalContest)                                 //done
+	private.POST("/rejoin-contest-approval", approvalRejoinContest)                    //done
 	private.POST("/admin-transaction", approvalTransactions)                           //done
 	private.POST("/cancel-transaction", cancelTransactions)                            //done
 	private.GET("/get-transaction-list", getTransactions)                              //done

@@ -41,7 +41,7 @@ function GetListOfTransactions() {
   })
     .then(response => {
       if (!response.ok) {
-        console.log(response)
+        // console.log(response)
         throw new Error("Network response was not ok");
       }
       return response.json(); // Parse the response JSON if needed
@@ -49,7 +49,7 @@ function GetListOfTransactions() {
     .then(dataResponse => {
       let htmlPrint = "";
       let transactionData = dataResponse.data
-      console.log(transactionData)
+      // console.log(transactionData)
       for (let key in transactionData) {
         let text_type = "";
         let text_id_contest = "";

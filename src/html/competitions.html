@@ -119,11 +119,44 @@
               <span id="fb_fx_invester_password"></span>
             </div>
           </form>
+          <span id="join_contest_message"></span>
         </div>
         <div class="modal-footer">
           <br>
           <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
           <button id="confirm_for_transaction" type="button" class="btn btn-secondary">Confirmation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal-lg fade" id="modal_transaction_rejoin" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="approval_title_rejoin"></h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post">
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">Contest ID</span>
+              <input id="inpContestIDRejoin" type="text" class="form-control" placeholder="Contest ID"
+                aria-label="Contest ID" aria-describedby="basic-addon1" disabled>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text w-25">CustomerID</span>
+              <input id="inpCustomerIDRejoin" type="text" class="form-control" placeholder="CustomerID"
+                aria-label="inpCustomerID" aria-describedby="basic-addon1" disabled>
+            </div>
+          </form>
+          <span id="re_join_contest_message"></span>
+        </div>
+        <div class="modal-footer">
+          <br>
+          <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
+          <button id="confirm_for_rejoin" type="button" class="btn btn-secondary">Confirmation</button>
         </div>
       </div>
     </div>

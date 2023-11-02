@@ -69,6 +69,8 @@ func CheckTransactiontype(type_id int) string {
 		return "Join a contest"
 	case 5:
 		return "Earn from contest"
+	case 6:
+		return "Re-Join a contest"
 	default:
 		return "unknow"
 	}
@@ -432,6 +434,52 @@ func approvalContest(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": currentContest})
 }
+func approvalRejoinContest(c *gin.Context) {
+	var input Contests
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	currentContest := Contests{}
+	if err := db_ksc.Model(&currentContest).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if currentContest.ContestID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Not found"})
+		return
+	}
+
+	user := CpsUsers{}
+	if err := db_ksc.Model(&user).Select("name, email").Where("id = ?", input.CustomerID).Find(&user).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	listContest := ListContests{}
+	if err := db_ksc.Model(&listContest).Where("contest_id = ?", input.ContestID).Find(&listContest).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	formatMessage := "Approved a customer's re-join contest: %s\nCustomer: %s (%d - %s)\nFxID: %s\nFxInvesterPw: %s"
+	msg := fmt.Sprintf(formatMessage, input.ContestID, user.Name, input.CustomerID, user.Email, currentContest.FxID, currentContest.FxInvesterPw)
+
+	if err := SaveToMessages(1, msg); err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	SendEmailForContest(user.Email, input.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw)
+	//Delete from redis
+	keysToDelete := []string{}
+	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
+	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+		fmt.Printf("err Del Redis key: %v\n", err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": currentContest})
+}
 
 func approvalTransactions(c *gin.Context) {
 	var input CpsTransactions
@@ -506,7 +554,7 @@ func approvalTransactions(c *gin.Context) {
 				})
 			}
 		}
-	case 2, 4:
+	case 2, 4, 6:
 		{
 			if newTrans.StatusID == 1 {
 				newTrans.StatusID = 2
@@ -613,7 +661,7 @@ func cancelTransactions(c *gin.Context) {
 				})
 			}
 		}
-	case 2, 4:
+	case 2, 4, 6:
 		{
 			if newTrans.StatusID == 1 {
 				wallet := CpsWallets{}
