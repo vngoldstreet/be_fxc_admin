@@ -17,8 +17,8 @@ import (
 )
 
 func dbMigrations() {
-	db_ksc.Migrator().DropTable(&RawMT5Datas{})
-	db_ksc.AutoMigrate(&RawMT5Datas{})
+	db_ksc.Migrator().DropTable(&OldLeaderBoards{})
+	db_ksc.AutoMigrate(&OldLeaderBoards{})
 }
 
 func CheckTokenValid(token string) error {
@@ -242,6 +242,96 @@ func upLoadFunc(c *gin.Context) {
 		"data_upload": newUpload,
 		"update":      updated,
 		"new":         newDataToCreates,
+	})
+}
+
+func upLoadOldLeaderboard(c *gin.Context) {
+	fileUpload, header, err := c.Request.FormFile("file")
+	if err != nil {
+		fmt.Printf("err upload: %v\n", err)
+		c.String(400, "Bad Request")
+		return
+	}
+	defer fileUpload.Close()
+
+	// Create a directory to store uploaded files
+	err = os.MkdirAll("uploads", os.ModePerm)
+	if err != nil {
+		c.String(500, "Internal Server Error")
+		return
+	}
+	currentTime := time.Now()
+	fileName := fmt.Sprintf("%d%d%d_%dh%d_%s", currentTime.Year(), currentTime.Month(), currentTime.Day(), currentTime.Hour(), currentTime.Minute(), removeSpecialChars(header.Filename))
+	// Create a new file on the server
+	out, err := os.Create("uploads/" + fileName)
+	if err != nil {
+		c.String(500, "Internal Server Error")
+		return
+	}
+	defer out.Close()
+
+	// Copy the file content from the form to the file on the server
+	_, err = io.Copy(out, fileUpload)
+	if err != nil {
+		c.String(500, "Internal Server Error")
+		return
+	}
+
+	db_ksc.Migrator().DropTable(&OldLeaderBoards{})
+	db_ksc.AutoMigrate(&OldLeaderBoards{})
+
+	// Open and read the uploaded CSV file
+	file, err := os.Open("uploads/" + fileName)
+
+	// file, err := os.Open("uploads/rank_fxc.csv")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// Create a CSV reader
+	reader := csv.NewReader(file)
+
+	// Read and ignore the header row
+	records, err := reader.ReadAll()
+	if err != nil {
+		fmt.Println("Error reading CSV file:", err)
+		return
+	}
+
+	var newUpload []OldLeaderBoards
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		// record := strings.Split(line[0], ",")
+		rank, _ := strconv.Atoi(record[0])
+
+		start_balabce, _ := strconv.ParseFloat(record[4], 64)
+		balance, _ := strconv.ParseFloat(record[5], 64)
+		prize, _ := strconv.ParseFloat(record[6], 64)
+
+		intTime, _ := strconv.Atoi(record[9])
+		timestamp := int64(intTime)
+		cre := intToTime(timestamp)
+
+		data := OldLeaderBoards{
+			Rank:         rank,
+			ContestID:    record[1],
+			Login:        record[2],
+			Email:        obfuscateEmail(record[3]),
+			StartBalance: start_balabce,
+			Balance:      balance,
+			Prize:        prize,
+			Type:         record[8],
+			CreatedAt:    cre,
+		}
+
+		newUpload = append(newUpload, data)
+	}
+	db_ksc.Create(&newUpload)
+	c.JSON(200, gin.H{
+		"data": newUpload,
 	})
 }
 

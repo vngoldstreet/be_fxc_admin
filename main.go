@@ -65,6 +65,7 @@ func main() {
 			"title": "Upload",
 		})
 	})
+
 	public := r.Group("/public")
 	public.POST("/register", Register)
 	public.POST("/login", Login)
@@ -72,7 +73,7 @@ func main() {
 	private := r.Group("/auth")
 	private.Use(JwtAuthMiddleware())
 	private.POST("/upload-csv", upLoadFunc)
-
+	private.POST("/upload-old-leaderboard", upLoadOldLeaderboard)
 	private.POST("/create-contest", createContest)
 	private.POST("/create-transaction", createTransactions)
 	private.POST("/update-contest-id", updateContestByID)                              //done

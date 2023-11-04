@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -247,4 +248,41 @@ type RawMT5Datas struct {
 	Equity     float64 `json:"equity"`
 	Profit     float64 `json:"profit"`
 	FloatingPL float64 `json:"floating_pl"`
+}
+
+type OldLeaderBoards struct {
+	ID           uint      `gorm:"primarykey"`
+	CreatedAt    time.Time `json:"created_at"`
+	Rank         int       `json:"rank"`
+	Login        string    `json:"login"`
+	Email        string    `json:"email"`
+	ContestID    string    `json:"contest_id"`
+	StartBalance float64   `json:"start_balance"`
+	Balance      float64   `json:"balance"`
+	Prize        float64   `json:"prize"`
+	Type         string    `json:"type"`
+}
+
+func obfuscateEmail(email string) string {
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return email // Không phải một địa chỉ email hợp lệ
+	}
+
+	username := parts[0]
+	domain := parts[1]
+
+	if len(username) <= 6 {
+		return username[:3] + "***" + "@" + domain
+	}
+
+	obfuscatedUsername := username[:3] + strings.Repeat("*", len(username)-6) + username[len(username)-3:]
+
+	return obfuscatedUsername + "@" + domain
+}
+
+func intToTime(timestamp int64) time.Time {
+	// Convert the integer to a time.Time
+	t := time.Unix(timestamp, 0)
+	return t
 }
