@@ -283,7 +283,7 @@ type PromoConfigs struct {
 
 func generatePromoCode(customer_id uint) string {
 	promoConfig := PromoConfigs{}
-	if err := db_ksc.Model(&promoConfig).Where("status_id = 1").Find(&promoConfig).Error; err != nil {
+	if err := db_ksc.Model(&promoConfig).Where("status = 1").Find(&promoConfig).Error; err != nil {
 		fmt.Printf("err: %v\n", err)
 		return ""
 	}
