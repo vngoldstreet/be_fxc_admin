@@ -17,8 +17,16 @@ import (
 )
 
 func dbMigrations() {
-	db_ksc.Migrator().DropTable(&OldLeaderBoards{})
-	db_ksc.AutoMigrate(&OldLeaderBoards{})
+	// db_ksc.Migrator().DropTable(&OldLeaderBoards{})
+	db_ksc.AutoMigrate(&Promos{})
+	db_ksc.AutoMigrate(&PromoConfigs{})
+	config := PromoConfigs{
+		Length:      16,
+		Discount:    0.1,
+		Description: "Discount code for the first re-entry",
+		Status:      1,
+	}
+	db_ksc.Model(&PromoConfigs{}).Create(&config)
 }
 
 func CheckTokenValid(token string) error {
@@ -513,7 +521,12 @@ func approvalContest(c *gin.Context) {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	SendEmailForContest(user.Email, input.ContestID, input.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw)
+	promoCode := ""
+	if index := (listContest.CurrentPerson / listContest.MaximumPerson) * 100; index <= 50 {
+		promoCode = generatePromoCode(input.CustomerID)
+	}
+
+	SendEmailForContest(user.Email, input.ContestID, input.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, promoCode)
 	//Delete from redis
 	keysToDelete := []string{}
 	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
@@ -523,6 +536,7 @@ func approvalContest(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": currentContest})
 }
+
 func approvalRejoinContest(c *gin.Context) {
 	var input Contests
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -535,6 +549,7 @@ func approvalRejoinContest(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	if currentContest.ContestID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Not found"})
 		return
@@ -559,7 +574,7 @@ func approvalRejoinContest(c *gin.Context) {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	SendEmailForContest(user.Email, input.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw)
+	SendEmailForContest(user.Email, input.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, "")
 	//Delete from redis
 	keysToDelete := []string{}
 	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))

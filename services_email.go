@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func SendEmailForContest(toEmail string, contest_id string, account string, user_password string, user_investor_pass string) error {
+func SendEmailForContest(toEmail string, contest_id string, account string, user_password string, user_investor_pass string, promo_code string) error {
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
@@ -111,8 +111,19 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																									<td
 																										style="font:400 20px/28px roboto,helvetica,sans-serif;color:#000000;padding:0;margin:0">
 																										FXU Solutions Limited (FXUSolutions)</td>
-																								</tr>
-																							</tbody>
+																								</tr>`
+	if promo_code != "" {
+		body += `<tr>
+																									<td
+																										style="font:300 20px/28px roboto,helvetica,sans-serif;color:#2d3436;padding:0 10px 5px 0;margin:0">
+																										Promotion code:</td>
+																									<td
+																										style="font:400 20px/28px roboto,helvetica,sans-serif;color:#000000;padding:0 0 5px;margin:0">
+																										<u></u>` + promo_code + `<u></u>
+																									</td>
+																								</tr>`
+	}
+	body += `</tbody>
 																						</table>
 																					</div>
 																				</td>

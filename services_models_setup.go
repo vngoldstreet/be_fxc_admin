@@ -31,7 +31,6 @@ func init() {
 		fmt.Printf("Ping err: %v\n", err)
 	}
 	fmt.Printf("ping: %v\n", ping)
-
 }
 
 func connectDatabase() {

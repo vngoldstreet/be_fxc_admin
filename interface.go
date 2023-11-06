@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -261,6 +263,54 @@ type OldLeaderBoards struct {
 	Balance      float64   `json:"balance"`
 	Prize        float64   `json:"prize"`
 	Type         string    `json:"type"`
+}
+
+type Promos struct {
+	gorm.Model
+	CustomerID uint    `json:"customer_id"`
+	PromoCode  string  `json:"promo_code"`
+	Discount   float64 `json:"discount"`
+	Status     int     `json:"status"`
+}
+
+type PromoConfigs struct {
+	gorm.Model
+	Length      int     `json:"length"`
+	Discount    float64 `json:"discount"`
+	Description string  `json:"description"`
+	Status      int     `json:"status"`
+}
+
+func generatePromoCode(customer_id uint) string {
+	promoConfig := PromoConfigs{}
+	if err := db_ksc.Model(&promoConfig).Where("status_id = 1").Find(&promoConfig).Error; err != nil {
+		fmt.Printf("err: %v\n", err)
+		return ""
+	}
+	length := promoConfig.Length
+	uniqueID, err := uuid.NewUUID()
+	if err != nil {
+		fmt.Println("Lỗi khi tạo UUID:", err)
+		return ""
+	}
+
+	uniqueIDString := strings.ToUpper(uniqueID.String())
+
+	if length > len(uniqueIDString) {
+		length = len(uniqueIDString)
+	}
+
+	promoCode := uniqueIDString[:length]
+	newPromo := Promos{
+		CustomerID: customer_id,
+		PromoCode:  promoCode,
+		Discount:   promoConfig.Discount,
+		Status:     0,
+	}
+	if err := db_ksc.Model(&newPromo).Create(&newPromo).Error; err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+	return newPromo.PromoCode
 }
 
 func obfuscateEmail(email string) string {
