@@ -65,10 +65,18 @@ func main() {
 			"title": "Upload",
 		})
 	})
-
+	r.GET("/post", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "posts.html", gin.H{
+			"title": "Post",
+		})
+	})
 	public := r.Group("/public")
 	public.POST("/register", Register)
 	public.POST("/login", Login)
+
+	public.GET("/posts", getPosts)
+	public.GET("/image", getImage)
+	public.GET("/post-by-url", getPostByUrl)
 
 	private := r.Group("/auth")
 	private.Use(JwtAuthMiddleware())
@@ -89,5 +97,8 @@ func main() {
 	private.GET("/get-history-contest-list", getHistoryContestList)                    //done
 	private.GET("/get-review-list", getReviewLists)                                    //done
 	private.POST("/update-review-list", updateReviewLists)                             //done
+	private.POST("/create-post", postDatas)                                            //done
+	private.POST("/update-post", updatePost)                                           //done
+
 	r.Run(":8081")
 }

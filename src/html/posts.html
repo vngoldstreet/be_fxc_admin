@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.title}}</title>
+  <link rel="shortcut icon" type="image/png" href="src/assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="src/assets/css/styles.min.css" />
+
+  <script src="https://cdn.tiny.cloud/1/cuz0p8il0hr51lglafgoup9g2ms7c5zismqbhil61pfeubbm/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    {{template "left-sidebar.html"}}
+    <div class="body-wrapper">
+      {{template "header.html"}}
+      <div class="container-fluid">
+        <div class="row">
+          <div id="chart_div" class="col-lg-12 d-flex align-items-strech">
+            <div class="card w-100">
+              <div class="card-body">
+                <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                  <div class="mb-3 mb-sm-0">
+                    <h5 class="card-title fw-semibold">Created a post</h5>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25" id="input_title">Title</span>
+                      <input type="text" class="form-control" placeholder="Title" aria-label="Title"
+                        aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25" id="input_description">Description</span>
+                      <input type="text" class="form-control" placeholder="Description" aria-label="Description"
+                        aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25" id="input_tag">Tag</span>
+                      <input type="text" class="form-control" placeholder="Tag" aria-label="Tag"
+                        aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25" id="input_view">View</span>
+                      <input type="number" class="form-control" placeholder="View" aria-label="View"
+                        aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25" id="input_tag">Url</span>
+                      <input type="text" class="form-control" placeholder="Url" aria-label="Url"
+                        aria-describedby="basic-addon1">
+                      <button class="btn btn-outline-secondary" type="button" id="check-url">Gennate</button>
+                    </div>
+                    <div class="input-group mb-3">
+                      <label class="input-group-text w-25" for="inputGroupSelect02">Danh mục</label>
+                      <select class="form-select" id="input_type">
+                        <option value="news" selected>Tin tức</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="input-group mb-3">
+                      <input type="file" class="form-control" id="input_thumb">
+                    </div>
+                  </div>
+                </div>
+
+                <textarea placeholder="Type somethings" class="form-control w-100" aria-label="With textarea"
+                  id="input_content"></textarea>
+                <code id="fb_msg_create"></code>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="src/assets/js/app.min.js"></script>
+    <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+    <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
+    <script src="src/assets/js/header.js"></script>
+    <script src="src/assets/js/sidebarmenu.js"></script>
+    <script src="src/assets/js/post.js"></script>
+    <script>
+      tinymce.init({
+        selector: 'textarea',
+        plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+          { value: 'First.Name', title: 'First Name' },
+          { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+      });
+    </script>
+</body>
+
+</html>

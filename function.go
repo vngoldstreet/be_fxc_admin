@@ -18,15 +18,7 @@ import (
 
 func dbMigrations() {
 	// db_ksc.Migrator().DropTable(&OldLeaderBoards{})
-	db_ksc.AutoMigrate(&Promos{})
-	db_ksc.AutoMigrate(&PromoConfigs{})
-	config := PromoConfigs{
-		Length:      16,
-		Discount:    0.1,
-		Description: "Discount code for the first re-entry",
-		Status:      1,
-	}
-	db_ksc.Model(&PromoConfigs{}).Create(&config)
+	db_ksc.AutoMigrate(&Posts{})
 }
 
 func CheckTokenValid(token string) error {
@@ -143,7 +135,7 @@ func upLoadFunc(c *gin.Context) {
 	// Open and read the uploaded CSV file
 	file, err := os.Open("uploads/" + fileName)
 	if err != nil {
-		panic(err)
+		fmt.Printf("err: %v\n", err)
 	}
 	defer file.Close()
 

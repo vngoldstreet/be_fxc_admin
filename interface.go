@@ -10,6 +10,19 @@ import (
 	"gorm.io/gorm"
 )
 
+type Posts struct {
+	gorm.Model
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Content     string `json:"content"`
+	Thumb       string `json:"thumb"`
+	Type        string `json:"type"`
+	Tag         string `json:"tag"`
+	Viewer      int    `json:"viewer"`
+	Url         string `json:"url"`
+	Keyword     string `json:"keyword"`
+}
+
 type CpsUsers struct {
 	gorm.Model
 	Name        string `json:"name"`
