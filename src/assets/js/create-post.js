@@ -19,31 +19,48 @@ function getCookie(cookieName) {
 
 $(document).ready(function () {
     let saveData = JSON.parse(localStorage.getItem("post"))
-    tinymce.init({
-        selector: '#input_content',
-        plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-        tinycomments_mode: 'embedded',
-        tinycomments_author: 'Author name',
-        mergetags_list: [
-            { value: 'First.Name', title: 'First Name' },
-            { value: 'Email', title: 'Email' },
-        ],
-        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
-        setup: function (editor) {
-            editor.on('init', function () {
-                tinymce.activeEditor.setContent(saveData.content)
-            });
-        }
-    });
+    if (saveData !== null) {
+        tinymce.init({
+            selector: '#input_content',
+            plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+            setup: function (editor) {
+                editor.on('init', function () {
+                    if (saveData.content !== null) {
+                        tinymce.activeEditor.setContent(saveData.content)
+                    }
+                });
+            }
+        });
 
-    $("#input_title").val(saveData.title);
-    $("#input_description").val(saveData.description);
-    $("#input_tag").val(saveData.tag);
-    $("#input_view").val(saveData.viewer);
-    $("#input_type").val(saveData.type);
-    $("#input_keyword").val(saveData.keyword);
-    $("#previewImage").attr("src", saveData.thumb);
+        $("#input_title").val(saveData.title);
+        $("#input_description").val(saveData.description);
+        $("#input_tag").val(saveData.tag);
+        $("#input_view").val(saveData.viewer);
+        $("#input_type").val(saveData.type);
+        $("#input_keyword").val(saveData.keyword);
+        $("#previewImage").attr("src", saveData.thumb);
+    } else {
+        tinymce.init({
+            selector: '#input_content',
+            plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        });
+    }
 
     let output_thumb = ""
     $("#input_thumb").change(function () {
@@ -92,6 +109,7 @@ $(document).ready(function () {
         localStorage.setItem("post", JSON.stringify(post_data))
         $("#fb_msg_create").addClass("text-success").text(JSON.stringify(post_data))
     })
+
     $("#post_to_server").click(function () {
         let output_title = $("#input_title").val();
         let output_description = $("#input_description").val();

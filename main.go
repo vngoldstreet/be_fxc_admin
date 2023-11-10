@@ -71,7 +71,7 @@ func main() {
 		})
 	})
 	r.GET("/update-post", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "update-posts.html", gin.H{
+		c.HTML(http.StatusOK, "update-post.html", gin.H{
 			"title": "Update Post",
 		})
 	})
@@ -80,7 +80,7 @@ func main() {
 	public.POST("/login", Login)
 
 	public.GET("/posts", getPosts)
-	public.GET("/image", getImage)
+	public.GET("/image/:url", getImage)
 	public.GET("/post-by-url", getPostByUrl)
 
 	private := r.Group("/auth")
@@ -104,6 +104,6 @@ func main() {
 	private.POST("/update-review-list", updateReviewLists)                             //done
 	private.POST("/create-post", postDatas)                                            //done
 	private.POST("/update-post", updatePost)                                           //done
-
+	private.POST("/delete-post", deletePost)                                           //done
 	r.Run(":8081")
 }

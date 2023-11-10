@@ -27,7 +27,47 @@
                 <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                   <div class="mb-3 mb-sm-0">
                     <h5 class="card-title fw-semibold">List of posts</h5>
+                    <div class="table-responsive table-option w-100">
+                      <table class="table text-nowrap mb-0 align-middle caption-top">
+                        <caption id="total_count"></caption>
+                        <thead class="text-dark fs-4 sticky-top bg-light">
+                          <tr>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">ID</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Created/Updated</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Title/Description</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Thumb</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Keyword/Tag</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Type/Url</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Viewer</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Update</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Delete</h6>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody id="transaction-list">
+
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -35,11 +75,12 @@
         </div>
       </div>
     </div>
-    <div class="modal fade" id="modal_updates" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal modal-xl fade" id="modal_updates" tabindex="-1" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Update Post</h1>
+            <h2 class="modal-title fs-5" id="exampleModalLabel">Update Post</h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -85,12 +126,11 @@
               </div>
               <div class="col-lg-6">
                 <div class="input-group mb-3">
-                  <input type="file" class="form-control" id="input_thumb">
+                  <input type="file" class="form-control w-25" id="input_thumb">
                   <img class="w-100 mt-3" id="previewImage">
                 </div>
               </div>
             </div>
-
             <textarea placeholder="Type somethings" class="form-control w-100" aria-label="With textarea"
               id="input_content"></textarea>
             <code id="fb_msg_create"></code>
@@ -98,19 +138,38 @@
           <div class="modal-footer">
             <br>
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            <button id="post_to_server" type="button" class="btn btn-secondary w-25 ms-3">Post</button>
+            <button id="post_to_server" type="button" class="btn btn-secondary w-25 ms-3">Update</button>
           </div>
         </div>
       </div>
     </div>
-    <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
-    <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="src/assets/js/app.min.js"></script>
-    <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
-    <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
-    <script src="src/assets/js/header.js"></script>
-    <script src="src/assets/js/sidebarmenu.js"></script>
-    <script src="src/assets/js/update-post.js"></script>
+
+    <div class="modal fade" id="modal_delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="title_delete">Delete Post</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <span id="delete_desc"></span>
+            <span id="delete_thumb"></span>
+            <code id="fb_msg_delete"></code>
+          </div>
+          <div class="modal-footer">
+            <br>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            <button id="delete_to_server" type="button" class="btn btn-secondary w-25 ms-3">Delete</button>
+          </div>
+        </div>
+        <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
+        <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="src/assets/js/app.min.js"></script>
+        <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+        <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
+        <script src="src/assets/js/header.js"></script>
+        <script src="src/assets/js/sidebarmenu.js"></script>
+        <script src="src/assets/js/update-post.js"></script>
 
 </body>
 

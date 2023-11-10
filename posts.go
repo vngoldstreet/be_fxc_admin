@@ -14,7 +14,7 @@ func getPosts(c *gin.Context) {
 	type_post := c.Query("type")
 	length, _ := strconv.Atoi(c.Query("length"))
 	datas := []Posts{}
-	resp := db_ksc.Select("title, description, created_at, url, viewer").Where("type = ?", type_post).Order("id desc").Limit(length).Find(&datas)
+	resp := db_ksc.Where("type = ?", type_post).Order("id desc").Limit(length).Find(&datas)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "Success",
 		"count":  resp.RowsAffected,
@@ -66,12 +66,12 @@ func postDatas(c *gin.Context) {
 }
 
 func getPostByUrl(c *gin.Context) {
-	url := c.Param("url")
-	datas := Posts{}
-	db_ksc.Where("url=?", url).Find(&datas)
+	url := c.Query("url")
+	data := Posts{}
+	db_ksc.Model(&Posts{}).Where("url=?", url).First(&data)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "Success",
-		"data":   datas,
+		"data":   data,
 	})
 }
 
@@ -93,4 +93,16 @@ func updatePost(c *gin.Context) {
 			"data":   input,
 		})
 	}
+}
+
+func deletePost(c *gin.Context) {
+	id := c.Query("id")
+	uuid, _ := strconv.Atoi(id)
+	data := Posts{}
+	db_ksc.Model(&Posts{}).Where("id=?", uuid).First(&data)
+	db_ksc.Delete(&data)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "Success",
+		"data":   data,
+	})
 }
