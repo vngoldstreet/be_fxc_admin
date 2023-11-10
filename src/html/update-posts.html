@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.title}}</title>
+  <link rel="shortcut icon" type="image/png" href="src/assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="src/assets/css/styles.min.css" />
+
+  <script src="https://cdn.tiny.cloud/1/cuz0p8il0hr51lglafgoup9g2ms7c5zismqbhil61pfeubbm/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    {{template "left-sidebar.html"}}
+    <div class="body-wrapper">
+      {{template "header.html"}}
+      <div class="container-fluid">
+        <div class="row">
+          <div id="chart_div" class="col-lg-12 d-flex align-items-strech">
+            <div class="card w-100">
+              <div class="card-body">
+                <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                  <div class="mb-3 mb-sm-0">
+                    <h5 class="card-title fw-semibold">List of posts</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modal_updates" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Update Post</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="input-group mb-3">
+                  <span class="input-group-text w-25">Title</span>
+                  <input id="input_title" type="text" class="form-control" placeholder="Title" aria-label="Title"
+                    aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text w-25">Description</span>
+                  <textarea rows="4" id="input_description" type="text" class="form-control" placeholder="Description"
+                    aria-label="Description" aria-describedby="basic-addon1"></textarea>
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text w-25">Tag</span>
+                  <input id="input_tag" type="text" class="form-control" placeholder="Tag" aria-label="Tag"
+                    aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text w-25">View</span>
+                  <input id="input_view" type="number" class="form-control" placeholder="View" aria-label="View"
+                    aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text w-25">Url</span>
+                  <input id="input_url" type="text" class="form-control" placeholder="Url" aria-label="Url"
+                    aria-describedby="basic-addon1">
+                  <button class="btn btn-outline-secondary" type="button" id="generate_url">Generate</button>
+                </div>
+                <div class="input-group mb-3">
+                  <label class="input-group-text w-25" for="inputGroupSelect02">Danh mục</label>
+                  <select class="form-select" id="input_type">
+                    <option value="news" selected>Tin tức</option>
+                  </select>
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text w-25">Keyword</span>
+                  <input id="input_keyword" type="number" class="form-control" placeholder="Keyword"
+                    aria-label="Keyword" aria-describedby="basic-addon1">
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="input-group mb-3">
+                  <input type="file" class="form-control" id="input_thumb">
+                  <img class="w-100 mt-3" id="previewImage">
+                </div>
+              </div>
+            </div>
+
+            <textarea placeholder="Type somethings" class="form-control w-100" aria-label="With textarea"
+              id="input_content"></textarea>
+            <code id="fb_msg_create"></code>
+          </div>
+          <div class="modal-footer">
+            <br>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            <button id="post_to_server" type="button" class="btn btn-secondary w-25 ms-3">Post</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="src/assets/js/app.min.js"></script>
+    <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+    <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
+    <script src="src/assets/js/header.js"></script>
+    <script src="src/assets/js/sidebarmenu.js"></script>
+    <script src="src/assets/js/update-post.js"></script>
+
+</body>
+
+</html>

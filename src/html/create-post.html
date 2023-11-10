@@ -32,30 +32,30 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="input-group mb-3">
-                      <span class="input-group-text w-25" id="input_title">Title</span>
-                      <input type="text" class="form-control" placeholder="Title" aria-label="Title"
+                      <span class="input-group-text w-25">Title</span>
+                      <input id="input_title" type="text" class="form-control" placeholder="Title" aria-label="Title"
                         aria-describedby="basic-addon1">
                     </div>
                     <div class="input-group mb-3">
-                      <span class="input-group-text w-25" id="input_description">Description</span>
-                      <input type="text" class="form-control" placeholder="Description" aria-label="Description"
+                      <span class="input-group-text w-25">Description</span>
+                      <textarea rows="4" id="input_description" type="text" class="form-control"
+                        placeholder="Description" aria-label="Description" aria-describedby="basic-addon1"></textarea>
+                    </div>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25">Tag</span>
+                      <input id="input_tag" type="text" class="form-control" placeholder="Tag" aria-label="Tag"
                         aria-describedby="basic-addon1">
                     </div>
                     <div class="input-group mb-3">
-                      <span class="input-group-text w-25" id="input_tag">Tag</span>
-                      <input type="text" class="form-control" placeholder="Tag" aria-label="Tag"
+                      <span class="input-group-text w-25">View</span>
+                      <input id="input_view" type="number" class="form-control" placeholder="View" aria-label="View"
                         aria-describedby="basic-addon1">
                     </div>
                     <div class="input-group mb-3">
-                      <span class="input-group-text w-25" id="input_view">View</span>
-                      <input type="number" class="form-control" placeholder="View" aria-label="View"
+                      <span class="input-group-text w-25">Url</span>
+                      <input id="input_url" type="text" class="form-control" placeholder="Url" aria-label="Url"
                         aria-describedby="basic-addon1">
-                    </div>
-                    <div class="input-group mb-3">
-                      <span class="input-group-text w-25" id="input_tag">Url</span>
-                      <input type="text" class="form-control" placeholder="Url" aria-label="Url"
-                        aria-describedby="basic-addon1">
-                      <button class="btn btn-outline-secondary" type="button" id="check-url">Gennate</button>
+                      <button class="btn btn-outline-secondary" type="button" id="generate_url">Generate</button>
                     </div>
                     <div class="input-group mb-3">
                       <label class="input-group-text w-25" for="inputGroupSelect02">Danh mục</label>
@@ -63,10 +63,16 @@
                         <option value="news" selected>Tin tức</option>
                       </select>
                     </div>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25">Keyword</span>
+                      <input id="input_keyword" type="number" class="form-control" placeholder="Keyword"
+                        aria-label="Keyword" aria-describedby="basic-addon1">
+                    </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="input-group mb-3">
                       <input type="file" class="form-control" id="input_thumb">
+                      <img class="w-100 mt-3" id="previewImage">
                     </div>
                   </div>
                 </div>
@@ -74,6 +80,10 @@
                 <textarea placeholder="Type somethings" class="form-control w-100" aria-label="With textarea"
                   id="input_content"></textarea>
                 <code id="fb_msg_create"></code>
+                <div class="text-end mt-3">
+                  <button id="save_to_local_store" type="button" class="btn btn-light w-25">Save</button>
+                  <button id="post_to_server" type="button" class="btn btn-secondary w-25 ms-3">Post</button>
+                </div>
               </div>
             </div>
           </div>
@@ -89,21 +99,8 @@
     <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
     <script src="src/assets/js/header.js"></script>
     <script src="src/assets/js/sidebarmenu.js"></script>
-    <script src="src/assets/js/post.js"></script>
-    <script>
-      tinymce.init({
-        selector: 'textarea',
-        plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-        tinycomments_mode: 'embedded',
-        tinycomments_author: 'Author name',
-        mergetags_list: [
-          { value: 'First.Name', title: 'First Name' },
-          { value: 'Email', title: 'Email' },
-        ],
-        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
-      });
-    </script>
+    <script src="src/assets/js/create-post.js"></script>
+
 </body>
 
 </html>

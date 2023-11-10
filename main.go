@@ -65,9 +65,14 @@ func main() {
 			"title": "Upload",
 		})
 	})
-	r.GET("/post", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "posts.html", gin.H{
-			"title": "Post",
+	r.GET("/create-post", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "create-post.html", gin.H{
+			"title": "Create Post",
+		})
+	})
+	r.GET("/update-post", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "update-posts.html", gin.H{
+			"title": "Update Post",
 		})
 	})
 	public := r.Group("/public")
