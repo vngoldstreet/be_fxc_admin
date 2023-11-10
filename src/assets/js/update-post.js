@@ -52,7 +52,7 @@ function GetStarted() {
                         </span> 
                       </td>
                       <td class="border-bottom-0">
-                        <span class="fw-bold">${datas[key].title}</span> <br>
+                        <h6 class="fw-bold p-0 m-0">${datas[key].title}</h6> <br>
                         <span class="fw-normal">${datas[key].description}</span>
                       </td>
                       <td class="border-bottom-0">
@@ -64,7 +64,7 @@ function GetStarted() {
                       </td>
                       <td class="border-bottom-0">
                         <span class="fw-normal">${datas[key].type}</span> <br>
-                        <span class="fw-normal">${baseUrl + '/' + datas[key].url}</span>
+                        <span class="fw-normal"><a href="${baseUrl + '/' + datas[key].url}">Link</a></span>
                       </td >
                         <td class="border-bottom-0">
                             <span class="fw-normal">${datas[key].viewer}</span>
@@ -77,6 +77,7 @@ function GetStarted() {
                         </td>
                     </tr >
                     `;
+
             }
             $("#transaction-list").html(htmlPrint);
         })

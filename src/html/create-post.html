@@ -41,11 +41,7 @@
                       <textarea rows="4" id="input_description" type="text" class="form-control"
                         placeholder="Description" aria-label="Description" aria-describedby="basic-addon1"></textarea>
                     </div>
-                    <div class="input-group mb-3">
-                      <span class="input-group-text w-25">Tag</span>
-                      <input id="input_tag" type="text" class="form-control" placeholder="Tag" aria-label="Tag"
-                        aria-describedby="basic-addon1">
-                    </div>
+
                     <div class="input-group mb-3">
                       <span class="input-group-text w-25">View</span>
                       <input id="input_view" type="number" class="form-control" placeholder="View" aria-label="View"
@@ -65,8 +61,17 @@
                     </div>
                     <div class="input-group mb-3">
                       <span class="input-group-text w-25">Keyword</span>
-                      <input id="input_keyword" type="number" class="form-control" placeholder="Keyword"
+                      <input id="input_keyword" type="text" class="form-control" placeholder="Keyword"
                         aria-label="Keyword" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text w-25">Tag</span>
+                      <input id="input_tag" type="text" class="form-control" placeholder="Tag" aria-label="Tag"
+                        aria-describedby="basic-addon1">
+                      <button class="btn btn-outline-secondary" type="button" id="generate_tag">Create</button>
+                    </div>
+                    <div class="input-group mb-3">
+                      <span id="fb_tag" class=""></span>
                     </div>
                   </div>
                   <div class="col-lg-6">
@@ -87,9 +92,7 @@
               </div>
             </div>
           </div>
-
         </div>
-
       </div>
     </div>
     <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>

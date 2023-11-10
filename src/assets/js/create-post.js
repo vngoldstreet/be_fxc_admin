@@ -18,6 +18,14 @@ function getCookie(cookieName) {
 }
 
 $(document).ready(function () {
+
+    $("#input_tag").keypress(function (event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            $("#generate_tag").click();
+        }
+    });
+
     let saveData = JSON.parse(localStorage.getItem("post"))
     if (saveData !== null) {
         tinymce.init({
@@ -84,10 +92,32 @@ $(document).ready(function () {
         output_url = resultUrl
     });
 
+    let output_tag_generate = `
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#fxchampionship">#fxchampionship</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#cuocthi">#cuocthi</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#competition">#competition</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#trading">#trading</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#giaodich">#giaodich</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#taichinh">#taichinh</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#fund">#fund</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#dautu">#dautu</a>
+    <a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#investment">#investment</a>
+    `
+
+    $("#fb_tag").html(output_tag_generate);
+    let output_keyword = ""
+    $("#generate_tag").click(function () {
+        let rawTag = $("#input_tag").val()
+        output_keyword += rawTag + ", "
+        output_tag_generate += `<a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#${rawTag}">#${rawTag}</a>`
+        $("#fb_tag").html(output_tag_generate);
+        $("#input_tag").val("")
+    });
+
     $("#save_to_local_store").click(function () {
         let output_title = $("#input_title").val();
         let output_description = $("#input_description").val();
-        let output_tag = $("#input_tag").val();
+        let output_tag = output_tag_generate;
         let output_view = $("#input_view").val();
         let output_type = $("#input_type").val();
         let output_content = tinymce.activeEditor.getContent();
@@ -113,11 +143,11 @@ $(document).ready(function () {
     $("#post_to_server").click(function () {
         let output_title = $("#input_title").val();
         let output_description = $("#input_description").val();
-        let output_tag = $("#input_tag").val();
+        let output_tag = output_tag_generate;
         let output_view = $("#input_view").val();
         let output_type = $("#input_type").val();
         let output_content = tinymce.activeEditor.getContent();
-        let output_keyword = $("#input_keyword").val();
+        let output_keyword = $("#input_keyword").val() + "fxchampionship, competition, trading, giao dich, tai chinh, fund, dautu, investment";
         if (output_url === "") {
             output_url = cleanAndGenerateUrl(output_title);
         }
