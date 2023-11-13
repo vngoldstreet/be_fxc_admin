@@ -80,6 +80,7 @@ func main() {
 	public.POST("/login", Login)
 
 	public.GET("/posts", getPosts)
+	public.GET("/all-of-posts", getAllPosts)
 	public.GET("/image/:url", getImage)
 	public.GET("/post-by-url", getPostByUrl)
 
