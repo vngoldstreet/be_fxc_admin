@@ -24,7 +24,7 @@ func getPosts(c *gin.Context) {
 
 func getAllPosts(c *gin.Context) {
 	datas := []Posts{}
-	resp := db_ksc.Select("title,description,url").Order("id desc").Find(&datas)
+	resp := db_ksc.Select("title,description,url,UpdatedAt").Order("id desc").Find(&datas)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "Success",
 		"count":  resp.RowsAffected,
