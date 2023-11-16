@@ -341,23 +341,26 @@ func updateContestByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	tx := db_ksc.Begin()
 	newContest := ListContests{}
-	if err := db_ksc.Where("contest_id = ?", input.ContestID).Find(&newContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Where("contest_id = ?", input.ContestID).First(&newContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	newContest.StatusID = input.StatusID
 	// newContest.ContestID = GenerateSecureCodeContest(int(newContest.ID))
-	if err := db_ksc.Save(&newContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Save(&newContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	updateContest := []Contests{}
-	if err := db_ksc.Model(Contests{}).Where("contest_id = ?", input.ContestID).Find(&updateContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(Contests{}).Where("contest_id = ?", input.ContestID).First(&updateContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -365,15 +368,16 @@ func updateContestByID(c *gin.Context) {
 		updates := Contests{
 			StatusID: input.StatusID,
 		}
-		if err := db_ksc.Model(&new).Where("id = ?", new.ID).Updates(updates).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err := tx.Model(&new).Where("id = ?", new.ID).Updates(updates).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 	}
 
 	//Delete from redis
 	userid := []CpsUsers{}
-	db_ksc.Model(CpsUsers{}).Select("id").Find(&userid)
+	tx.Model(CpsUsers{}).Select("id").Find(&userid)
 	keysToDelete := []string{}
 	for _, v := range userid {
 		keysToDelete = append(keysToDelete, setKey(v.ID, db_greetings))
@@ -381,6 +385,7 @@ func updateContestByID(c *gin.Context) {
 	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 		fmt.Printf("err Del Redis key: %v\n", err)
 	}
+	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"data": newContest})
 }
 
@@ -460,10 +465,11 @@ func approvalContest(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	tx := db_ksc.Begin()
 	currentContest := Contests{}
-	if err := db_ksc.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if currentContest.ContestID == "" {
@@ -475,20 +481,23 @@ func approvalContest(c *gin.Context) {
 	currentContest.FxInvesterPw = input.FxInvesterPw
 	currentContest.StatusID = 1
 
-	if err := db_ksc.Save(&currentContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Save(&currentContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	user := CpsUsers{}
-	if err := db_ksc.Model(&user).Select("name, email").Where("id = ?", input.CustomerID).Find(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(&user).Select("name, email").Where("id = ?", input.CustomerID).First(&user).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	listContest := ListContests{}
-	if err := db_ksc.Model(&listContest).Where("contest_id = ?", input.ContestID).Find(&listContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(&listContest).Where("contest_id = ?", input.ContestID).First(&listContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -501,8 +510,9 @@ func approvalContest(c *gin.Context) {
 		Equity:    float64(listContest.StartBalance),
 	}
 
-	if err := db_ksc.Save(&newLeaderBoard).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Save(&newLeaderBoard).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -525,7 +535,7 @@ func approvalContest(c *gin.Context) {
 	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 		fmt.Printf("err Del Redis key: %v\n", err)
 	}
-
+	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"data": currentContest})
 }
 
@@ -535,10 +545,11 @@ func approvalRejoinContest(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	tx := db_ksc.Begin()
 	currentContest := Contests{}
-	if err := db_ksc.Model(&currentContest).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).First(&currentContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -548,14 +559,16 @@ func approvalRejoinContest(c *gin.Context) {
 	}
 
 	user := CpsUsers{}
-	if err := db_ksc.Model(&user).Select("name, email").Where("id = ?", input.CustomerID).Find(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(&user).Select("name, email").Where("id = ?", input.CustomerID).First(&user).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	listContest := ListContests{}
-	if err := db_ksc.Model(&listContest).Where("contest_id = ?", input.ContestID).Find(&listContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(&listContest).Where("contest_id = ?", input.ContestID).First(&listContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -573,7 +586,7 @@ func approvalRejoinContest(c *gin.Context) {
 	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 		fmt.Printf("err Del Redis key: %v\n", err)
 	}
-
+	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"data": currentContest})
 }
 
@@ -583,10 +596,12 @@ func approvalTransactions(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	tx := db_ksc.Begin()
 	newTrans := CpsTransactions{}
 
-	if err := db_ksc.Model(newTrans).Where("id = ?", input.ID).Find(&newTrans).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(newTrans).Where("id = ?", input.ID).First(&newTrans).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -596,8 +611,9 @@ func approvalTransactions(c *gin.Context) {
 		{
 			if newTrans.StatusID == 1 {
 				wallet := CpsWallets{}
-				if err := db_ksc.Where("customer_id = ?", newTrans.CustomerID).Find(&wallet).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Where("customer_id = ?", newTrans.CustomerID).First(&wallet).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 
@@ -605,8 +621,9 @@ func approvalTransactions(c *gin.Context) {
 				changeBalance := newTrans.Amount
 				newBalance := currentBalance + changeBalance
 
-				if err := db_ksc.Model(newWallet).Where("customer_id = ?", newTrans.CustomerID).Update("balance", newBalance).Find(&newWallet).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(newWallet).Where("customer_id = ?", newTrans.CustomerID).Update("balance", newBalance).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 
@@ -614,14 +631,16 @@ func approvalTransactions(c *gin.Context) {
 				newTrans.CBalance = currentBalance
 				newTrans.NBalance = newBalance
 
-				if err := db_ksc.Save(&newTrans).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Save(&newTrans).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 
 				user := CpsUsers{}
-				if err := db_ksc.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).Find(&user).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).First(&user).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				type_string := CheckTransactiontype(newTrans.TypeID)
@@ -638,7 +657,7 @@ func approvalTransactions(c *gin.Context) {
 				if err := SaveToMessages(2, msg); err != nil {
 					fmt.Printf("err: %v\n", err)
 				}
-
+				tx.Commit()
 				c.JSON(http.StatusOK, gin.H{
 					"old_wallet": wallet,
 					"new_wallet": newWallet,
@@ -650,23 +669,26 @@ func approvalTransactions(c *gin.Context) {
 				})
 			}
 		}
-	case 2, 4, 6:
+	case 2:
 		{
 			if newTrans.StatusID == 1 {
 				newTrans.StatusID = 2
-				if err := db_ksc.Save(&newTrans).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Save(&newTrans).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 
 				user := CpsUsers{}
-				if err := db_ksc.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).Find(&user).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).First(&user).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				wallet := CpsWallets{}
-				if err := db_ksc.Model(wallet).Where("customer_id = ?", user.ID).Find(&wallet).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(wallet).Where("customer_id = ?", user.ID).First(&wallet).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				type_string := CheckTransactiontype(newTrans.TypeID)
@@ -683,7 +705,99 @@ func approvalTransactions(c *gin.Context) {
 				if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 					fmt.Printf("err Del Redis key: %v\n", err)
 				}
+				tx.Commit()
+				c.JSON(http.StatusOK, gin.H{
+					"message": msg,
+				})
+			} else {
+				c.JSON(http.StatusOK, gin.H{
+					"message": "Transaction does not exist",
+				})
+			}
+		}
+	case 4:
+		{
+			if newTrans.StatusID == 1 {
+				newTrans.StatusID = 2
+				if err := tx.Save(&newTrans).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
 
+				user := CpsUsers{}
+				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).First(&user).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				wallet := CpsWallets{}
+				if err := tx.Model(wallet).Where("customer_id = ?", user.ID).First(&wallet).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				type_string := CheckTransactiontype(newTrans.TypeID)
+				formatMessage := "Join a contest complete: %d\nCustomer: %s (%d - %s)\nType: %s\nBalance: %sG"
+				msg := fmt.Sprintf(formatMessage, newTrans.ID, user.Name, user.ID, user.Email, type_string, NumberToString(int(wallet.Balance), ','))
+
+				if err := SaveToMessages(2, msg); err != nil {
+					fmt.Printf("err: %v\n", err)
+				}
+
+				//Delete from redis
+				keysToDelete := []string{}
+				keysToDelete = append(keysToDelete, setKey(newTrans.CustomerID, db_greetings))
+				if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+					fmt.Printf("err Del Redis key: %v\n", err)
+				}
+				tx.Commit()
+				c.JSON(http.StatusOK, gin.H{
+					"message": msg,
+				})
+			} else {
+				c.JSON(http.StatusOK, gin.H{
+					"message": "Transaction does not exist",
+				})
+			}
+		}
+	case 6:
+		{
+			if newTrans.StatusID == 1 {
+				newTrans.StatusID = 2
+				if err := tx.Save(&newTrans).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+
+				user := CpsUsers{}
+				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).First(&user).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				wallet := CpsWallets{}
+				if err := tx.Model(wallet).Where("customer_id = ?", user.ID).First(&wallet).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				type_string := CheckTransactiontype(newTrans.TypeID)
+				formatMessage := "Re-join a contest complete: %d\nCustomer: %s (%d - %s)\nType: %s\nBalance: %sG"
+				msg := fmt.Sprintf(formatMessage, newTrans.ID, user.Name, user.ID, user.Email, type_string, NumberToString(int(wallet.Balance), ','))
+
+				if err := SaveToMessages(2, msg); err != nil {
+					fmt.Printf("err: %v\n", err)
+				}
+
+				//Delete from redis
+				keysToDelete := []string{}
+				keysToDelete = append(keysToDelete, setKey(newTrans.CustomerID, db_greetings))
+				if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+					fmt.Printf("err Del Redis key: %v\n", err)
+				}
+				tx.Commit()
 				c.JSON(http.StatusOK, gin.H{
 					"message": msg,
 				})
@@ -694,6 +808,7 @@ func approvalTransactions(c *gin.Context) {
 			}
 		}
 	}
+
 }
 
 func cancelTransactions(c *gin.Context) {
@@ -703,9 +818,10 @@ func cancelTransactions(c *gin.Context) {
 		return
 	}
 	newTrans := CpsTransactions{}
-
-	if err := db_ksc.Model(newTrans).Where("id = ?", input.ID).Find(&newTrans).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	tx := db_ksc.Begin()
+	if err := tx.Model(newTrans).Where("id = ?", input.ID).First(&newTrans).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -716,20 +832,23 @@ func cancelTransactions(c *gin.Context) {
 			if newTrans.StatusID == 1 {
 				newTrans.StatusID = 3
 
-				errSaveTrans := db_ksc.Save(&newTrans).Error
+				errSaveTrans := tx.Save(&newTrans).Error
 				if errSaveTrans != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": errSaveTrans.Error()})
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": errSaveTrans.Error()})
 					return
 				}
 
 				user := CpsUsers{}
-				if err := db_ksc.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).Find(&user).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).First(&user).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				wallet := CpsWallets{}
-				if err := db_ksc.Model(wallet).Where("customer_id = ?", user.ID).Find(&wallet).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(wallet).Where("customer_id = ?", user.ID).First(&wallet).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				type_string := CheckTransactiontype(newTrans.TypeID)
@@ -746,11 +865,10 @@ func cancelTransactions(c *gin.Context) {
 				if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 					fmt.Printf("err Del Redis key: %v\n", err)
 				}
-
+				tx.Commit()
 				c.JSON(http.StatusOK, gin.H{
 					"message": msg,
 				})
-
 			} else {
 				c.JSON(http.StatusOK, gin.H{
 					"message": "Transaction does not exist",
@@ -761,8 +879,9 @@ func cancelTransactions(c *gin.Context) {
 		{
 			if newTrans.StatusID == 1 {
 				wallet := CpsWallets{}
-				if err := db_ksc.Where("customer_id = ?", newTrans.CustomerID).Find(&wallet).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Where("customer_id = ?", newTrans.CustomerID).Find(&wallet).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 
@@ -770,8 +889,9 @@ func cancelTransactions(c *gin.Context) {
 				changeBalance := newTrans.Amount
 				newBalance := currentBalance + changeBalance
 
-				if err := db_ksc.Model(newWallet).Where("customer_id = ?", newTrans.CustomerID).Update("balance", newBalance).Find(&newWallet).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(newWallet).Where("customer_id = ?", newTrans.CustomerID).Update("balance", newBalance).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 
@@ -779,14 +899,16 @@ func cancelTransactions(c *gin.Context) {
 				newTrans.CBalance = currentBalance
 				newTrans.NBalance = newBalance
 
-				if err := db_ksc.Save(&newTrans).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Save(&newTrans).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				//--
 				user := CpsUsers{}
-				if err := db_ksc.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).Find(&user).Error; err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).Find(&user).Error; err != nil {
+					tx.Rollback()
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				type_string := CheckTransactiontype(newTrans.TypeID)
@@ -803,7 +925,7 @@ func cancelTransactions(c *gin.Context) {
 				if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 					fmt.Printf("err Del Redis key: %v\n", err)
 				}
-
+				tx.Commit()
 				//--
 				c.JSON(http.StatusOK, gin.H{
 					"old_wallet": wallet,
@@ -824,6 +946,7 @@ func createTransactions(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	tx := db_ksc.Begin()
 	//create new transaction
 	newTrans := CpsTransactions{}
 	newTrans.TypeID = input.TypeID
@@ -831,28 +954,32 @@ func createTransactions(c *gin.Context) {
 	newTrans.Amount = input.Amount
 	newTrans.StatusID = 1 //Processing
 
-	if err := db_ksc.Create(&newTrans).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Create(&newTrans).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	resTransaction := []CpsTransactions{}
-	if err := db_ksc.Model(CpsTransactions{}).Where("customer_id = ?", input.CustomerID).Order("id desc").Find(&resTransaction).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(CpsTransactions{}).Where("customer_id = ?", input.CustomerID).Order("id desc").Find(&resTransaction).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	//Get wallet to send message to telegram
 	resWallet := CpsWallets{}
-	if err := db_ksc.Model(CpsWallets{}).Where("customer_id = ?", input.CustomerID).Find(&resWallet).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := tx.Model(CpsWallets{}).Where("customer_id = ?", input.CustomerID).First(&resWallet).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	//get users
 	resUser := CpsUsers{}
-	if err := db_ksc.Model(CpsUsers{}).Where("id = ?", input.CustomerID).Find(&resUser).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := db_ksc.Model(CpsUsers{}).Where("id = ?", input.CustomerID).First(&resUser).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -871,7 +998,7 @@ func createTransactions(c *gin.Context) {
 	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 		fmt.Printf("err Del Redis key: %v\n", err)
 	}
-
+	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"message": "Success"})
 }
 
@@ -889,7 +1016,6 @@ func getTransactions(c *gin.Context) {
 					cps_transactions.created_at as created_at,
 					cps_transactions.updated_at as updated_at
 				  `
-
 	if err := db_ksc.Model(&CpsTransactions{}).Select(selectPromp).Joins("INNER JOIN cps_users on cps_transactions.customer_id = cps_users.id").Where("status_id = 1 and type_id in (1,2)").Order("cps_transactions.id desc").Find(&trans).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))

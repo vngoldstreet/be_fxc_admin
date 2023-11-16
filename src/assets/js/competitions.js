@@ -156,11 +156,13 @@ $(document).ready(function () {
 })
 
 function ShowTransactionInformation(param_id, customer_id, contest_id, name) {
-  $("#approval_title").text(`Approval for this competition: ${contest_id}`)
+  $("#confirm_for_transaction").prop("disabled", false);
+  $("#confirm_for_transaction").text(`Approval for this competition: ${contest_id}`)
   $("#inpContestID").attr("value", contest_id)
   $("#inpCustomerID").attr("value", `${customer_id} - ${name}`)
 
   $("#confirm_for_transaction").click(function () {
+    $("#confirm_for_transaction").prop("disabled", true);
     let fx_id_text = $("#inpLoginID").val();
     let fx_master_password = $("#inpMasterPassword").val();
     let fx_investor_password = $("#inpInvestorPassword").val();
@@ -174,8 +176,6 @@ function ShowTransactionInformation(param_id, customer_id, contest_id, name) {
       $('#inpLoginID').removeClass('is-invalid').addClass('is-valid');
       $('#fb_fx_id_text').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
     }
-
-
     if (fx_master_password === '') {
       $('#inpMasterPassword').addClass('is-invalid');
       $('#fb_fx_master_password').addClass('invalid-feedback').text('MasterPassword is required'); // Display an error message
@@ -329,6 +329,7 @@ function ConfirmRejectTransaction(param_id) {
 
 
 function CancelTransaction(param_id, name, amount, contest_id) {
+  $("#reject_for_transaction").prop("disabled", false);
   let vndAmount = amount * goldRate
   let html_text = `
   <p><span class="fw-semibold">ID:</span> ${param_id}</p>
@@ -340,11 +341,10 @@ function CancelTransaction(param_id, name, amount, contest_id) {
 
   $("#transaction-information-reject").html(html_text)
   $("#reject_for_transaction").click(function () {
+    $("#reject_for_transaction").prop("disabled", true);
     ConfirmRejectTransaction(param_id);
-
   });
 }
-
 
 
 function ConfirmTransaction(param_id) {

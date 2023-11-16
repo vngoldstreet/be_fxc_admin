@@ -121,6 +121,7 @@ $(document).ready(function () {
   GetListOfContests()
 
   $("#create_contest").click(function () {
+    $("#create_contest").prop("disabled", true);
     let amount = $("#inpAmount").val()
     let max_person = $("#inpMaximumPerson").val()
     let start_balance = $("#inpStartBalance").val()

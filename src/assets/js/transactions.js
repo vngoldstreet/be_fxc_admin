@@ -152,6 +152,7 @@ $(document).ready(function () {
 })
 
 function ShowTransactionInformation(param_id, name, amount) {
+  $("#confirm_for_transaction").prop("disabled", false);
   let vndAmount = Number(amount) * goldRate
   let html_text = `
   <p><span class="fw-semibold">ID:</span> ${param_id}</p>
@@ -162,11 +163,13 @@ function ShowTransactionInformation(param_id, name, amount) {
 
   $("#transaction-information").html(html_text)
   $("#confirm_for_transaction").click(function () {
+    $("#confirm_for_transaction").prop("disabled", true);
     ConfirmTransaction(param_id);
   });
 }
 
 function CancelTransaction(param_id, name, amount) {
+  $("#reject_for_transaction").prop("disabled", false);
   let vndAmount = amount * goldRate
   let html_text = `
   <p><span class="fw-semibold">ID:</span> ${param_id}</p>
@@ -177,6 +180,7 @@ function CancelTransaction(param_id, name, amount) {
 
   $("#transaction-information-reject").html(html_text)
   $("#reject_for_transaction").click(function () {
+    $("#reject_for_transaction").prop("disabled", true);
     ConfirmRejectTransaction(param_id);
   });
 }
