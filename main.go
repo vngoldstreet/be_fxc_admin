@@ -107,5 +107,6 @@ func main() {
 	private.POST("/update-post", updatePost)                                           //done
 	private.POST("/delete-post", deletePost)                                           //done
 	private.POST("/active-partner", activePartner)                                     //done
+	private.POST("/reset-password", resetPassword)                                     //done
 	r.Run(":8081")
 }
