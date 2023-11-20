@@ -1,6 +1,6 @@
 
-// const baseUrl = "https://admin.fxchampionship.com";
-const baseUrl = "http://localhost:8081";
+const baseUrl = "https://admin.fxchampionship.com";
+// const baseUrl = "http://localhost:8081";
 const urlUpload = baseUrl + "/auth/create-post";
 
 function getCookie(cookieName) {
