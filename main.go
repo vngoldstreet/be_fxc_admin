@@ -75,6 +75,7 @@ func main() {
 			"title": "Update Post",
 		})
 	})
+
 	public := r.Group("/public")
 	public.POST("/register", Register)
 	public.POST("/login", Login)
@@ -108,5 +109,6 @@ func main() {
 	private.POST("/delete-post", deletePost)                                           //done
 	private.POST("/active-partner", activePartner)                                     //done
 	private.POST("/reset-password", resetPassword)                                     //done
+	private.POST("/create-store", CreateStore)                                         //done
 	r.Run(":8081")
 }
