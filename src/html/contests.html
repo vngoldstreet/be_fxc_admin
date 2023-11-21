@@ -59,7 +59,7 @@
                         <h6 class="fw-semibold mb-0">Personal/Maximum</h6>
                       </th>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Amount</h6>
+                        <h6 class="fw-semibold mb-0">Amount/Type</h6>
                       </th>
                       <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">StartBalance</h6>
@@ -110,7 +110,14 @@
                 <option value="3">Canceled</option>
               </select>
             </div>
-
+            <div class="input-group mb-3">
+              <button class="input-group-text w-25" type="button">Type of Contest</button>
+              <select class="form-select" id="inpTypeID" aria-label="Example select with button addon">
+                <option value="1">Silver</option>
+                <option value="2">Gold</option>
+                <option value="3">Platinum</option>
+              </select>
+            </div>
           </form>
           <span id="fb_msg"></span>
         </div>
@@ -160,8 +167,16 @@
             </div>
             <div class="input-group mb-3">
               <span class="input-group-text w-25">StatusID</span>
-              <input value="0" id="inpStatusID" type="number" class="form-control" placeholder="inpStatusID"
+              <input value="0" id="inpCreateStatusID" type="number" class="form-control" placeholder="inpStatusID"
                 aria-label="inpStatusID" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <button class="input-group-text w-25" type="button">Type of Contest</button>
+              <select class="form-select" id="inpCreatTypeID" aria-label="Example select with button addon">
+                <option value="1" selected>Silver</option>
+                <option value="2">Gold</option>
+                <option value="3">Platinum</option>
+              </select>
             </div>
           </form>
           <span id="fb_msg_create"></span>

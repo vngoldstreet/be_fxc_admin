@@ -48,6 +48,7 @@ function GetListOfContests() {
     .then(dataResponse => {
       let htmlPrint = "";
       let contestDatas = dataResponse.data
+      console.log(contestDatas)
       let text_status = "";
       let bg_class = "";
       for (let key in contestDatas) {
@@ -67,6 +68,20 @@ function GetListOfContests() {
           case 3:
             text_status = "Cancel";
             bg_class = "text-danger";
+            break;
+          default:
+            break;
+        }
+        let type_contest = ""
+        switch (contestDatas[key].type_id) {
+          case 1:
+            type_contest = "Silver";
+            break;
+          case 2:
+            type_contest = "Gold";
+            break;
+          case 3:
+            type_contest = "Platinum";
             break;
           default:
             break;
@@ -91,7 +106,8 @@ function GetListOfContests() {
                         <span class="fw-normal">${contestDatas[key].maximum_person}</span>
                       </td>
                       <td class="border-bottom-0">
-                        <span class="fw-normal mb-0">${contestDatas[key].amount} G</span>
+                        <span class="fw-normal mb-0">${contestDatas[key].amount} G</span> <br>
+                        <span class="fw-normal mb-0">${type_contest}</span> <br>
                       </td>
                       <td class="border-bottom-0">
                         <div class="d-flex align-items-center gap-2">
@@ -104,7 +120,7 @@ function GetListOfContests() {
                         </div>
                       </td>
                       <td class="border-bottom-0">
-                        <button onclick="EditingContest('${contestDatas[key].contest_id}','${contestDatas[key].status_id}')" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_editing">Editing</button>
+                        <button onclick="EditingContest('${contestDatas[key].contest_id}','${contestDatas[key].status_id}','${contestDatas[key].type_id}')" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_editing">Editing</button>
                       </td>
                     </tr>
                   `;
@@ -127,7 +143,8 @@ $(document).ready(function () {
     let start_balance = $("#inpStartBalance").val()
     let start_at = $("#inpStartAt").val()
     let expired_at = $("#inpExpireAt").val()
-    let status_id = $("#inpStatusID").val()
+    let status_id = $("#inpCreateStatusID").val()
+    let type_id = $("#inpCreatTypeID").val()
 
     var datestart = new Date(start_at);
     datestart.setHours(datestart.getHours() + 7);
@@ -148,6 +165,7 @@ $(document).ready(function () {
       "start_at": time_start_at,
       "expired_at": time_end,
       "status_id": Number(status_id),
+      "type_id": Number(type_id),
     };
 
     console.log(JSON.stringify(inpCreate))
@@ -190,18 +208,16 @@ $(document).ready(function () {
   })
 })
 
-function CreateAContest() {
 
-}
-
-function EditingContest(contest_id, status_id) {
+function EditingContest(contest_id, status_id, type_id) {
   $("#approval_title").text(`Update for this competition: ${contest_id}`)
   $("#inpContestID").attr("value", contest_id)
   $("#inpStatusID").val(status_id)
+  $("#inpTypeID").val(type_id)
 
   $("#confirm_for_contest").click(function () {
     let stID = $("#inpStatusID").val();
-    let new_status_id = Number(stID)
+    let newInpTypeID = $("#inpTypeID").val();
     const jwtToken = getCookie("token");
     if (!jwtToken) {
       console.error("Error: JWT token is missing.");
@@ -210,12 +226,14 @@ function EditingContest(contest_id, status_id) {
 
     const inpApproval = {
       "contest_id": contest_id,
-      "status_id": new_status_id,
+      "status_id": Number(stID),
+      "type_id": Number(newInpTypeID)
     };
 
     const headers = new Headers({
       'Authorization': `Bearer ${jwtToken}`
     });
+
     console.log(JSON.stringify(inpApproval))
     fetch(urlUpdateContest, {
       method: "POST",

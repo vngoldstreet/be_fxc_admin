@@ -155,7 +155,7 @@ $(document).ready(function () {
   GetListOfTransactions()
 })
 
-function ShowTransactionInformation(param_id, customer_id, contest_id, name) {
+function ShowTransactionInformation(transaction_id, customer_id, contest_id, name) {
   $("#confirm_for_transaction").prop("disabled", false);
   $("#confirm_for_transaction").text(`Approval for this competition: ${contest_id}`)
   $("#inpContestID").attr("value", contest_id)
@@ -163,39 +163,41 @@ function ShowTransactionInformation(param_id, customer_id, contest_id, name) {
 
   $("#confirm_for_transaction").click(function () {
     $("#confirm_for_transaction").prop("disabled", true);
-    let fx_id_text = $("#inpLoginID").val();
-    let fx_master_password = $("#inpMasterPassword").val();
-    let fx_investor_password = $("#inpInvestorPassword").val();
 
-    if (fx_id_text === '') {
-      $('#inpLoginID').addClass('is-invalid');
-      $('#fb_fx_id_text').addClass('invalid-feedback').text('LoginID is required'); // Display an error message
-      return;
-    } else {
-      // Valid email format
-      $('#inpLoginID').removeClass('is-invalid').addClass('is-valid');
-      $('#fb_fx_id_text').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
-    }
-    if (fx_master_password === '') {
-      $('#inpMasterPassword').addClass('is-invalid');
-      $('#fb_fx_master_password').addClass('invalid-feedback').text('MasterPassword is required'); // Display an error message
-      return;
-    } else {
-      // Valid email format
-      $('#inpMasterPassword').removeClass('is-invalid').addClass('is-valid');
-      $('#fb_fx_master_password').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
-    }
-    if (fx_investor_password === '') {
-      $('#inpInvestorPassword').addClass('is-invalid');
-      $('#fb_fx_invester_password').addClass('invalid-feedback').text('InvestorPassword is required'); // Display an error message
-      return;
-    } else {
-      // Valid email format
-      $('#inpInvestorPassword').removeClass('is-invalid').addClass('is-valid');
-      $('#fb_fx_invester_password').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
-    }
-    CreateMetaTraderData(contest_id, customer_id, fx_id_text, fx_master_password, fx_investor_password)
-    ConfirmTransaction(param_id);
+    // let fx_id_text = $("#inpLoginID").val();
+    // let fx_master_password = $("#inpMasterPassword").val();
+    // let fx_investor_password = $("#inpInvestorPassword").val();
+
+    // if (fx_id_text === '') {
+    //   $('#inpLoginID').addClass('is-invalid');
+    //   $('#fb_fx_id_text').addClass('invalid-feedback').text('LoginID is required'); // Display an error message
+    //   return;
+    // } else {
+    //   // Valid email format
+    //   $('#inpLoginID').removeClass('is-invalid').addClass('is-valid');
+    //   $('#fb_fx_id_text').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
+    // }
+    // if (fx_master_password === '') {
+    //   $('#inpMasterPassword').addClass('is-invalid');
+    //   $('#fb_fx_master_password').addClass('invalid-feedback').text('MasterPassword is required'); // Display an error message
+    //   return;
+    // } else {
+    //   // Valid email format
+    //   $('#inpMasterPassword').removeClass('is-invalid').addClass('is-valid');
+    //   $('#fb_fx_master_password').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
+    // }
+    // if (fx_investor_password === '') {
+    //   $('#inpInvestorPassword').addClass('is-invalid');
+    //   $('#fb_fx_invester_password').addClass('invalid-feedback').text('InvestorPassword is required'); // Display an error message
+    //   return;
+    // } else {
+    //   // Valid email format
+    //   $('#inpInvestorPassword').removeClass('is-invalid').addClass('is-valid');
+    //   $('#fb_fx_invester_password').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
+    // }
+
+    //, fx_id_text, fx_master_password, fx_investor_password
+    CreateMetaTraderData(contest_id, customer_id, transaction_id)
   });
 }
 
@@ -247,8 +249,8 @@ function ApprovalRejoinToContest(contest_id, customer_id) {
       console.error("Error:", error);
     });
 }
-
-function CreateMetaTraderData(contest_id, customer_id, fx_id, fx_master_password, fx_investor_password) {
+//, fx_id, fx_master_password, fx_investor_password
+function CreateMetaTraderData(contest_id, customer_id, transaction_id) {
   const jwtToken = getCookie("token");
   if (!jwtToken) {
     console.error("Error: JWT token is missing.");
@@ -257,10 +259,10 @@ function CreateMetaTraderData(contest_id, customer_id, fx_id, fx_master_password
 
   const inpApproval = {
     "contest_id": contest_id,
-    "customer_id": customer_id,
-    "fx_id": fx_id,
-    "fx_master_pw": fx_master_password,
-    "fx_invester_pw": fx_investor_password,
+    "customer_id": customer_id
+    // "fx_id": fx_id,
+    // "fx_master_pw": fx_master_password,
+    // "fx_invester_pw": fx_investor_password,
   };
   // console.log(JSON.stringify(inpApproval))
   const headers = new Headers({
@@ -283,8 +285,11 @@ function CreateMetaTraderData(contest_id, customer_id, fx_id, fx_master_password
       let html = `<code class='w-100 text-success'>${stringData}</code>`
       $("#join_contest_message").removeClass().addClass("fw-semibold");
       $("#join_contest_message").html(html);
+      ConfirmTransaction(transaction_id);
     })
     .catch(error => {
+      let html = `<code class='w-100 text-danger'>${error}</code>`
+      $("#join_contest_message").html(html);
       console.error("Error:", error);
     });
 }

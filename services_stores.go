@@ -13,7 +13,7 @@ type AccountStores struct {
 	FxMasterPw   string `json:"fx_master_pw"`
 	FxInvesterPw string `json:"fx_invester_pw"`
 	TypeID       int    `json:"type_id"`                    // 1=silver;2=gold;3=platinum
-	StatusID     int    `json:"status_id" gorm:"default:0"` //0 empty;1 active;2 delete
+	StatusID     int    `json:"status_id" gorm:"default:0"` //0 empty;1 active;
 }
 
 func CreateStore(c *gin.Context) {

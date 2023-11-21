@@ -173,6 +173,7 @@ type ListContests struct {
 	StartBalance  int       `json:"start_balance"`
 	EstimatedTime time.Time `json:"estimate_time"`
 	StatusID      int       `json:"status_id" gorm:"default:0"`
+	TypeID        int       `json:"type_id" gorm:"default:1"`
 }
 
 type CreateContest struct {
@@ -185,6 +186,7 @@ type CreateContest struct {
 	StartBalance  int     `json:"start_balance"`
 	EstimatedTime string  `json:"estimate_time"`
 	StatusID      int     `json:"status_id" gorm:"default:0"`
+	TypeID        int     `json:"type_id" gorm:"default:1"`
 }
 
 type Contests struct {

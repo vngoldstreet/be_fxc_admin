@@ -18,7 +18,7 @@ import (
 
 func dbMigrations() {
 	// db_ksc.Migrator().DropTable(&OldLeaderBoards{})
-	// db_ksc.AutoMigrate(&AccountStores{})
+	db_ksc.AutoMigrate(&ListContests{})
 }
 
 func CheckTokenValid(token string) error {
@@ -178,7 +178,7 @@ func upLoadFunc(c *gin.Context) {
 
 	listContest := []ListContests{}
 	if err := db_ksc.Model(ListContests{}).Select("contest_id").Where("status_id = 1").Find(&listContest).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -350,6 +350,7 @@ func updateContestByID(c *gin.Context) {
 	}
 
 	newContest.StatusID = input.StatusID
+	newContest.TypeID = input.TypeID
 	// newContest.ContestID = GenerateSecureCodeContest(int(newContest.ID))
 	if err := tx.Save(&newContest).Error; err != nil {
 		tx.Rollback()
@@ -434,6 +435,7 @@ func createContest(c *gin.Context) {
 	newContest.EstimatedTime = endTime.Add(24 * time.Hour)
 	newContest.StatusID = input.StatusID
 	newContest.ContestID = fmt.Sprintf("%s%d", "FXC", time.Now().Unix())
+	newContest.TypeID = input.TypeID
 	if err := db_ksc.Create(&newContest).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -466,22 +468,44 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 	tx := db_ksc.Begin()
+
+	//Lấy thông tin khách hàng đã đăng ký tham gia cuộc thi
 	currentContest := Contests{}
-	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
+	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).First(&currentContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	if currentContest.ContestID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Not found"})
+
+	//Cấp tài khoản cho khách hàng
+	contestInList := ListContests{}
+	if err := tx.Select("type_id").Where("contest_id = ?", input.ContestID).Find(&contestInList).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	currentContest.FxID = input.FxID
-	currentContest.FxMasterPw = input.FxMasterPw
-	currentContest.FxInvesterPw = input.FxInvesterPw
+
+	//Lấy 1 tài khoản đã tạo từ store
+	accountStore := AccountStores{}
+	if err := tx.Where("type_id = ? and status_id=0", contestInList.TypeID).First(&accountStore).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	currentContest.FxID = accountStore.FxID
+	currentContest.FxMasterPw = accountStore.FxMasterPw
+	currentContest.FxInvesterPw = accountStore.FxInvesterPw
 	currentContest.StatusID = 1
 
 	if err := tx.Save(&currentContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	accountStore.StatusID = 1
+	if err := tx.Save(&accountStore).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -502,10 +526,10 @@ func approvalContest(c *gin.Context) {
 	}
 
 	newLeaderBoard := RawMT5Datas{
-		Login:     input.FxID,
+		Login:     currentContest.FxID,
 		Name:      user.Name,
 		Email:     user.Email,
-		ContestID: input.ContestID,
+		ContestID: currentContest.ContestID,
 		Balance:   float64(listContest.StartBalance),
 		Equity:    float64(listContest.StartBalance),
 	}
@@ -528,7 +552,7 @@ func approvalContest(c *gin.Context) {
 		promoCode = generatePromoCode(input.CustomerID)
 	}
 
-	SendEmailForContest(user.Email, input.ContestID, input.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, promoCode)
+	SendEmailForContest(user.Email, currentContest.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, promoCode)
 	//Delete from redis
 	keysToDelete := []string{}
 	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
@@ -955,13 +979,6 @@ func createTransactions(c *gin.Context) {
 	newTrans.StatusID = 1 //Processing
 
 	if err := tx.Create(&newTrans).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	resTransaction := []CpsTransactions{}
-	if err := tx.Model(CpsTransactions{}).Where("customer_id = ?", input.CustomerID).Order("id desc").Find(&resTransaction).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
