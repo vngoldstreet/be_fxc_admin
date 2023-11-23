@@ -195,6 +195,41 @@ $(document).ready(function () {
 });
 
 function cleanAndGenerateUrl(title) {
-    var cleanUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    // Chuyển đổi từng ký tự trong tiêu đề
+    var latinTitle = title.split('').map(function (char) {
+        return vietnameseToLatin(char);
+    }).join('');
+
+    // Chuyển thành chữ thường và giữ lại ký tự chữ cái và số
+    var cleanUrl = latinTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-$/, "");
+
     return cleanUrl;
+}
+
+// function cleanAndGenerateUrl(title) {
+//   var cleanUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-$/, "");
+//   return cleanUrl;
+// }
+
+function vietnameseToLatin(char) {
+    // Tạo bảng chuyển đổi giữa tiếng Việt và Latin
+    var conversionTable = {
+        'à': 'a', 'á': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a',
+        'ă': 'a', 'ằ': 'a', 'ắ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a',
+        'â': 'a', 'ầ': 'a', 'ấ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a',
+        'è': 'e', 'é': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ẹ': 'e',
+        'ê': 'e', 'ề': 'e', 'ế': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e',
+        'ì': 'i', 'í': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i',
+        'ò': 'o', 'ó': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o',
+        'ô': 'o', 'ồ': 'o', 'ố': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o',
+        'ơ': 'o', 'ờ': 'o', 'ớ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o',
+        'ù': 'u', 'ú': 'u', 'ủ': 'u', 'ũ': 'u', 'ụ': 'u',
+        'ư': 'u', 'ừ': 'u', 'ứ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u',
+        'ỳ': 'y', 'ý': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y',
+        'đ': 'd',
+        ' ': '-' // Chuyển khoảng trắng thành dấu gạch ngang
+    };
+
+    // Trả về ký tự Latin tương ứng hoặc ký tự gốc nếu không có trong bảng
+    return conversionTable[char] || char;
 }
