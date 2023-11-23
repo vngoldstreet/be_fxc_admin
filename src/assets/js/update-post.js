@@ -1,6 +1,6 @@
 
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
+// const baseUrl = "https://admin.fxchampionship.com";
+const baseUrl = "http://localhost:8081";
 const urlUpdate = baseUrl + "/auth/update-post";
 const urlDelete = baseUrl + "/auth/delete-post?id=";
 const urlGetListOfPost = baseUrl + "/public/posts";
@@ -70,10 +70,10 @@ function GetStarted() {
                             <span class="fw-normal">${datas[key].viewer}</span>
                         </td>
                         <td class="border-bottom-0">
-                            <button onclick="UpdatePost('${datas[key].url}')" type="button" class="btn btn-primary p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_updates">Update</button>
+                            <button onclick="UpdatePost('${datas[key].ID}')" type="button" class="btn btn-primary p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_updates">Update</button>
                         </td>
                         <td class="border-bottom-0">
-                            <button onclick="DeletePost('${datas[key].url}')" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_delete">Delete</button>
+                            <button onclick="DeletePost('${datas[key].ID}')" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal" data-bs-target="#modal_delete">Delete</button>
                         </td>
                     </tr >
                     `;
@@ -132,8 +132,9 @@ function vietnameseToLatin(char) {
     return conversionTable[char] || char;
 }
 
-function UpdatePost(url_param) {
-    let url = baseUrl + "/public/post-by-url?url=" + url_param
+function UpdatePost(id_param) {
+    let url = baseUrl + "/public/post-by-id?id=" + id_param
+    console.log(url)
     fetch(url, {
         method: "GET",
     })
@@ -177,6 +178,7 @@ function UpdatePost(url_param) {
             });
 
             $("#post_to_server").click(function () {
+                $("#post_to_server").prop("disabled", true);
                 let output_title = $("#input_title").val();
                 let output_description = $("#input_description").val();
                 let output_tag = $("#input_tag").val();
@@ -236,8 +238,8 @@ function UpdatePost(url_param) {
         });
 }
 
-function DeletePost(url_param) {
-    let url = baseUrl + "/public/post-by-url?url=" + url_param
+function DeletePost(id_param) {
+    let url = baseUrl + "/public/post-by-id?id=" + id_param
     fetch(url, {
         method: "GET",
     })

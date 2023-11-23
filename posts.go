@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -79,6 +80,19 @@ func getPostByUrl(c *gin.Context) {
 	url := c.Query("url")
 	data := Posts{}
 	db_ksc.Model(&Posts{}).Where("url=?", url).First(&data)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "Success",
+		"data":   data,
+	})
+}
+
+func getPostByID(c *gin.Context) {
+	postID := c.Query("id")
+	data := Posts{}
+	if err := db_ksc.Model(&Posts{}).Where("id=?", postID).First(&data).Error; err != nil {
+		fmt.Printf("err: %v\n", err)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": "Success",
 		"data":   data,

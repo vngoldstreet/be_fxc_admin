@@ -84,6 +84,7 @@ func main() {
 	public.GET("/all-of-posts", getAllPosts)
 	public.GET("/image/:url", getImage)
 	public.GET("/post-by-url", getPostByUrl)
+	public.GET("/post-by-id", getPostByID)
 
 	private := r.Group("/auth")
 	private.Use(JwtAuthMiddleware())
