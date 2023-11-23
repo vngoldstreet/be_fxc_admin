@@ -1,6 +1,6 @@
 
-// const baseUrl = "https://admin.fxchampionship.com";
-const baseUrl = "http://localhost:8081";
+const baseUrl = "https://admin.fxchampionship.com";
+// const baseUrl = "http://localhost:8081";
 const urlUpdate = baseUrl + "/auth/update-post";
 const urlDelete = baseUrl + "/auth/delete-post?id=";
 const urlGetListOfPost = baseUrl + "/public/posts";
