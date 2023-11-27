@@ -84,6 +84,7 @@ func getPostByUrl(c *gin.Context) {
 			"status": "empty",
 			"data":   data,
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": "Success",
