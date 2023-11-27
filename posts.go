@@ -79,7 +79,12 @@ func postDatas(c *gin.Context) {
 func getPostByUrl(c *gin.Context) {
 	url := c.Query("url")
 	data := Posts{}
-	db_ksc.Model(&Posts{}).Where("url=?", url).First(&data)
+	if err := db_ksc.Model(&Posts{}).Where("url=?", url).First(&data); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "empty",
+			"data":   data,
+		})
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": "Success",
 		"data":   data,
