@@ -216,6 +216,7 @@ function EditingContest(contest_id, status_id, type_id) {
   $("#inpTypeID").val(type_id)
 
   $("#confirm_for_contest").click(function () {
+    $("#confirm_for_contest").prop("disabled", true);
     let stID = $("#inpStatusID").val();
     let newInpTypeID = $("#inpTypeID").val();
     const jwtToken = getCookie("token");
