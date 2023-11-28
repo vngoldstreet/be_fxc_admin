@@ -359,7 +359,7 @@ func updateContestByID(c *gin.Context) {
 	}
 
 	updateContest := []Contests{}
-	if err := tx.Model(Contests{}).Where("contest_id = ?", input.ContestID).First(&updateContest).Error; err != nil {
+	if err := tx.Model(Contests{}).Where("contest_id = ?", input.ContestID).Find(&updateContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
