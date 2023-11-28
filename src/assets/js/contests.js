@@ -210,6 +210,7 @@ $(document).ready(function () {
 
 
 function EditingContest(contest_id, status_id, type_id) {
+  $("#confirm_for_contest").prop("disabled", false);
   $("#approval_title").text(`Update for this competition: ${contest_id}`)
   $("#inpContestID").attr("value", contest_id)
   $("#inpStatusID").val(status_id)
