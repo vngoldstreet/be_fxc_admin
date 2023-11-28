@@ -23,6 +23,7 @@ function redirectToURL(targetUrl) {
 }
 
 function GetListOfContests() {
+  $("#create_contest").prop("disabled", false);
   const jwtToken = getCookie("token");
 
   if (!jwtToken) {
