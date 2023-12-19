@@ -35,7 +35,6 @@ function GetStarted() {
             return response.json(); // Parse the response JSON if needed
         })
         .then(dataResponse => {
-            console.log(dataResponse)
             $("#total_count").text(`List of ${dataResponse.count} posts`)
             let htmlPrint = "";
             let datas = dataResponse.data
@@ -47,24 +46,18 @@ function GetStarted() {
                       </td>
                       <td class="border-bottom-0">
                         <span class="fw-semibold">
-                        ${new Date(datas[key].CreatedAt).toLocaleString()}<br>
                         ${new Date(datas[key].UpdatedAt).toLocaleString()}
                         </span> 
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-bold p-0 m-0">${datas[key].title}</h6> <br>
-                        <span class="fw-normal">${datas[key].description}</span>
+                        <h6 class="fw-bold p-0 m-0">${datas[key].title}</h6>
                       </td>
                       <td class="border-bottom-0">
-                        <img class="img-inreview" src="${baseUrl + '/public/image/' + datas[key].url}" alt="">
-                      </td>
-                      <td class="border-bottom-0">
-                        <span class="fw-normal">${datas[key].keyword}</span> <br>
-                        <span class="fw-normal">${datas[key].tag}</span>
+                        <img style="height:100px" class="img-inreview" src="${datas[key].thumb}" alt="">
                       </td>
                       <td class="border-bottom-0">
                         <span class="fw-normal">${datas[key].type}</span> <br>
-                        <span class="fw-normal"><a href="${baseUrl + '/' + datas[key].url}">Link</a></span>
+                        <span class="fw-normal"><a target="_blank" href="${'https://fxchampionship.com/' + datas[key].url}">Link</a></span>
                       </td >
                         <td class="border-bottom-0">
                             <span class="fw-normal">${datas[key].viewer}</span>
@@ -134,7 +127,7 @@ function vietnameseToLatin(char) {
 
 function UpdatePost(id_param) {
     let url = baseUrl + "/public/post-by-id?id=" + id_param
-    console.log(url)
+    // console.log(url)
     fetch(url, {
         method: "GET",
     })
@@ -146,6 +139,8 @@ function UpdatePost(id_param) {
         })
         .then(dataResponse => {
             let saveData = dataResponse.data
+            $("#post_to_server").prop("disabled", false);
+            $("#fb_msg_create").text("")
             tinymce.activeEditor.setContent(saveData.content)
             $("#input_title").val(saveData.title);
             $("#input_description").val(saveData.description);
@@ -211,7 +206,7 @@ function UpdatePost(id_param) {
                 const headers = new Headers({
                     'Authorization': `Bearer ${jwtToken}`
                 });
-                console.log(JSON.stringify(post_data))
+                // console.log(JSON.stringify(post_data))
                 fetch(urlUpdate, {
                     method: "POST",
                     headers: headers,
@@ -224,7 +219,7 @@ function UpdatePost(id_param) {
                         return response.json(); // Parse the response JSON if needed
                     })
                     .then(dataResponse => {
-                        $("#fb_msg_create").addClass("text-success").text(JSON.stringify(dataResponse.data))
+                        $("#fb_msg_create").addClass("text-success").text("Success!")
                         GetStarted()
                     })
                     .catch(error => {
@@ -239,6 +234,8 @@ function UpdatePost(id_param) {
 }
 
 function DeletePost(id_param) {
+    $("#delete_to_server").prop("disabled", false);
+    $("#fb_msg_delete").addClass("text-success").text("")
     let url = baseUrl + "/public/post-by-id?id=" + id_param
     fetch(url, {
         method: "GET",
@@ -251,10 +248,12 @@ function DeletePost(id_param) {
         })
         .then(dataResponse => {
             let saveData = dataResponse.data
+
             $("#title_delete").text(saveData.title);
             $("#delete_desc").text(saveData.description);
             $("#delete_thumb").html(`<img class="img-inreview" src="${baseUrl + '/public/image/' + saveData.url}" alt="">`);
             $("#delete_to_server").click(function () {
+                $("#delete_to_server").prop("disabled", true);
                 const jwtToken = getCookie("token");
                 if (!jwtToken) {
                     console.error("Error: JWT token is missing.");
@@ -275,7 +274,7 @@ function DeletePost(id_param) {
                         return response.json(); // Parse the response JSON if 
                     })
                     .then(dataResponse => {
-                        $("#fb_msg_delete").addClass("text-success").text(JSON.stringify(dataResponse))
+                        $("#fb_msg_delete").addClass("text-success").text("Success!")
                         GetStarted()
                     })
                     .catch(error => {
