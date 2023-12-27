@@ -16,6 +16,8 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 
 	username := os.Getenv("EMAIL_ADDRESS")
 	password := os.Getenv("EMAIL_PASSWORD")
+	trading_server := os.Getenv("EMAIL_SERVER_TRADING")
+	trading_platform := os.Getenv("EMAIL_PLATFORM_TRADING")
 	// Gmail SMTP server and port
 	smtpHost := "smtp.zoho.com"
 	smtpPort := 587
@@ -27,7 +29,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 							<div id=":mv" class="a3s aiL msg8455739578090132613"><u></u>
 								<div style="margin:0!important;padding:0!important;background-color:#e6eaed" bgcolor="#E6EAED">
 									<div style="display:none;font-size:1px;color:#8957FF;line-height:1px;font-family:Open Sans,Helvetica,Arial,sans-serif;max-height:0px;max-width:0px;opacity:0;overflow:hidden">
-										Save your MetaTrader 5 account details <br> and start trading.
+										Save your ` + trading_platform + ` account details <br> and start trading.
 									</div>
 									<table border="0" cellpadding="0" cellspacing="0" width="100%">
 										<tbody>
@@ -70,7 +72,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																		<tbody>
 																			<tr>
 																				<td align="centar" style="font:300 44px/48px roboto,helvetica,sans-serif;color:#000000;padding:40px 0 60px;margin:0;text-align:center">
-																					Save your MT5 account details and start trading.
+																					Save your ` + trading_platform + ` account details and start trading.
 																				</td>
 																			</tr>
 																			<tr>
@@ -110,7 +112,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																										Server:</td>
 																									<td
 																										style="font:400 20px/28px roboto,helvetica,sans-serif;color:#000000;padding:0;margin:0">
-																										FXU Solutions Limited (FXUSolutions)</td>
+																										` + trading_server + `</td>
 																								</tr>`
 	if promo_code != "" {
 		body += `<tr>
@@ -170,7 +172,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																			</tr>
 																			<tr>
 																				<td align="center" style="font:300 20px/30px roboto,Arial,helvetica,sans-serif;color:#000000;margin:0;text-align:center">
-																					Log in to the MetaTrader 5 platform, start your first
+																					Log in to the ` + trading_platform + ` platform, start your first
 																					trade, and show everyone that you're a real formidable
 																					competitor!
 																				</td>
@@ -219,7 +221,6 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 	m.SetHeader("To", toEmail)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/html", body)
-	// m.Attach("/Users/vngoldstreet/Downloads/thantai-goldenfund.jpeg")
 
 	d := mail.NewDialer(smtpHost, smtpPort, username, password)
 	if err := d.DialAndSend(m); err != nil {
