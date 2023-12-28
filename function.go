@@ -101,7 +101,7 @@ func NumberToString(n int, sep rune) string {
 }
 
 func upLoadFunc(c *gin.Context) {
-	fileUpload, header, err := c.Request.FormFile("file")
+	fileUpload, _, err := c.Request.FormFile("file")
 	if err != nil {
 		fmt.Printf("err upload: %v\n", err)
 		c.String(400, "Bad Request")
@@ -116,7 +116,7 @@ func upLoadFunc(c *gin.Context) {
 		return
 	}
 	currentTime := time.Now()
-	fileName := fmt.Sprintf("%d%d%d_%dh%d_%s", currentTime.Year(), currentTime.Month(), currentTime.Day(), currentTime.Hour(), currentTime.Minute(), removeSpecialChars(header.Filename))
+	fileName := fmt.Sprintf("%d%d%d_%dh%d", currentTime.Year(), currentTime.Month(), currentTime.Day(), currentTime.Hour(), currentTime.Minute())
 	// Create a new file on the server
 	out, err := os.Create("uploads/" + fileName)
 	if err != nil {
@@ -156,17 +156,12 @@ func upLoadFunc(c *gin.Context) {
 		}
 		record := strings.Split(line[0], ";")
 		if removeSpecialChars(record[5]) != "" {
-			balance, _ := strconv.ParseFloat(removeSpecialChars(record[6]), 64)
-			equity, _ := strconv.ParseFloat(removeSpecialChars(record[7]), 64)
-			profit, _ := strconv.ParseFloat(removeSpecialChars(record[8]), 64)
-			floating, _ := strconv.ParseFloat(removeSpecialChars(record[9]), 64)
+			balance, _ := strconv.ParseFloat(removeSpecialChars(record[2]), 64)
+			equity, _ := strconv.ParseFloat(removeSpecialChars(record[11]), 64)
+			profit, _ := strconv.ParseFloat(removeSpecialChars(record[7]), 64)
+			floating, _ := strconv.ParseFloat(removeSpecialChars(record[10]), 64)
 			data := RawMT5Datas{
 				Login:      removeSpecialChars(record[0]),
-				Name:       removeSpecialChars(record[1]),
-				LastName:   removeSpecialChars(record[2]),
-				MiddleName: removeSpecialChars(record[3]),
-				Email:      removeSpecialChars(record[4]),
-				ContestID:  removeSpecialChars(record[5]), //comment
 				Balance:    balance,
 				Equity:     equity,
 				Profit:     profit,
@@ -196,47 +191,28 @@ func upLoadFunc(c *gin.Context) {
 				// fmt.Printf("new.Login: %v - Current: %v\n", new.Login, current.Login)
 				if current.Login == new.Login {
 					updates := RawMT5Datas{
-						Name:       new.Name,
-						LastName:   new.LastName,
-						MiddleName: new.MiddleName,
-						ContestID:  new.ContestID,
-						Email:      new.Email,
 						Balance:    new.Balance,
 						Equity:     new.Equity,
 						Profit:     new.Profit,
 						FloatingPL: new.FloatingPL,
 					}
-					if err := db_ksc.Model(&current).Where("id = ?", current.ID).Updates(updates).Error; err != nil {
+					if err := db_ksc.Model(&current).Where("login = ?", current.Login).Updates(updates).Error; err != nil {
 						c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 						return
 					}
 					updated = append(updated, current)
-					// idx = true
 				}
 			}
-			// if !idx {
-			// 	newCreate := RawMT5Datas{
-			// 		Login:      new.Login,
-			// 		Name:       new.Name,
-			// 		LastName:   new.LastName,
-			// 		MiddleName: new.MiddleName,
-			// 		ContestID:  new.ContestID,
-			// 		Email:      new.Email,
-			// 		Balance:    new.Balance,
-			// 		Equity:     new.Equity,
-			// 		Profit:     new.Profit,
-			// 		FloatingPL: new.FloatingPL,
-			// 	}
-			// 	newDataToCreates = append(newDataToCreates, newCreate)
-			// }
 		}
 	}
+
 	if len(newDataToCreates) > 0 {
 		if err := db_ksc.Model(&RawMT5Datas{}).Create(&newDataToCreates).Error; err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 	}
+
 	c.JSON(200, gin.H{
 		"contest":     listContest,
 		"data_upload": newUpload,
