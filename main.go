@@ -79,7 +79,7 @@ func main() {
 	public := r.Group("/public")
 	public.POST("/register", Register)
 	public.POST("/login", Login)
-
+	public.POST("/reset-password", resetPassword) //done
 	public.GET("/posts", getPosts)
 	public.GET("/all-of-posts", getAllPosts)
 	public.GET("/image/:url", getImage)
@@ -109,7 +109,7 @@ func main() {
 	private.POST("/update-post", updatePost)                                           //done
 	private.POST("/delete-post", deletePost)                                           //done
 	private.POST("/active-partner", activePartner)                                     //done
-	private.POST("/reset-password", resetPassword)                                     //done
-	private.POST("/create-store", CreateStore)                                         //done
+
+	private.POST("/create-store", CreateStore) //done
 	r.Run(":8081")
 }
