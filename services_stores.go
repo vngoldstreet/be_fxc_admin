@@ -23,10 +23,18 @@ func CreateStore(c *gin.Context) {
 		return
 	}
 	tx := db_ksc.Begin()
-	currentData := AccountStores{}
+	currentData := []AccountStores{}
 	if err := tx.Where("fx_id = ?", input.FxID).Find(&currentData).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if len(currentData) > 0 {
+		tx.Rollback()
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "Dữ liệu đã tồn tại",
+		})
 		return
 	}
 	newStore := AccountStores{
