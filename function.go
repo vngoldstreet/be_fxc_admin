@@ -158,7 +158,7 @@ func upLoadFunc(c *gin.Context) {
 		if removeSpecialChars(record[5]) != "" {
 			balance, _ := strconv.ParseFloat(removeSpecialChars(record[2]), 64)
 			equity, _ := strconv.ParseFloat(removeSpecialChars(record[11]), 64)
-			profit, _ := strconv.ParseFloat(removeSpecialChars(record[7]), 64)
+			profit, _ := strconv.ParseFloat(removeSpecialChars(record[10]), 64)
 			floating, _ := strconv.ParseFloat(removeSpecialChars(record[10]), 64)
 			data := RawMT5Datas{
 				Login:      removeSpecialChars(record[0]),
