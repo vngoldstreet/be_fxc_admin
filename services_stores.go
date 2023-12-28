@@ -40,7 +40,7 @@ func CreateStore(c *gin.Context) {
 	newStore := AccountStores{
 		FxID:         input.FxID,
 		FxMasterPw:   input.FxMasterPw,
-		FxInvesterPw: input.FxMasterPw,
+		FxInvesterPw: input.FxInvesterPw,
 		TypeID:       input.TypeID,
 		StatusID:     0,
 	}
