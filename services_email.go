@@ -148,10 +148,10 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																<td align="center" valign="middle" width="100%" bgcolor="#FFFFFF" style="padding:40px 0 0px;text-align:center">
 
 																	<div>
-																		<a href="https://www.metatrader5.com"
+																		<a href="https://www.cptmarkets.com/platform/metatrader4"
 																			style="width:412px;background-color:#00af52;background-repeat:no-repeat;border:1px solid #00af52;border-radius:2px;color:#ffffff;display:inline-block;font:700 20px/26px roboto,helvetica,sans-serif;text-decoration:none;padding:20px 0;text-align:center"
 																			target="_blank"
-																			data-saferedirecturl="https://www.metatrader5.com">
+																			data-saferedirecturl="https://www.cptmarkets.com/platform/metatrader4">
 																			Download your platform <br>
 																			<span
 																				style="color:#9cd6b7;font-size:14px">Web/Mac/Win/Android/iOS</span>
@@ -364,10 +364,10 @@ func SendEmailForRegister(toEmail string, account string, user_password string) 
                                                 style="padding:40px 0 0px;text-align:center">
 
                                                 <div>
-                                                    <a href="https://www.metatrader5.com"
+                                                    <a href="https://www.cptmarkets.com/platform/metatrader4"
                                                         style="width:412px;background-color:#00af52;background-repeat:no-repeat;border:1px solid #00af52;border-radius:2px;color:#ffffff;display:inline-block;font:700 20px/26px roboto,helvetica,sans-serif;text-decoration:none;padding:20px 0;text-align:center"
                                                         target="_blank"
-                                                        data-saferedirecturl="https://www.metatrader5.com">
+                                                        data-saferedirecturl="https://www.cptmarkets.com/platform/metatrader4">
                                                         Download your platform <br>
                                                         <span
                                                             style="color:#9cd6b7;font-size:14px">Web/Mac/Win/Android/iOS</span>
@@ -599,10 +599,10 @@ func SendEmailForResetPassword(toEmail string, account string, user_password str
                                                 style="padding:40px 0 0px;text-align:center">
 
                                                 <div>
-                                                    <a href="https://www.metatrader5.com"
+                                                    <a href="https://www.cptmarkets.com/platform/metatrader4"
                                                         style="width:412px;background-color:#00af52;background-repeat:no-repeat;border:1px solid #00af52;border-radius:2px;color:#ffffff;display:inline-block;font:700 20px/26px roboto,helvetica,sans-serif;text-decoration:none;padding:20px 0;text-align:center"
                                                         target="_blank"
-                                                        data-saferedirecturl="https://www.metatrader5.com">
+                                                        data-saferedirecturl="https://www.cptmarkets.com/platform/metatrader4">
                                                         Download your platform <br>
                                                         <span
                                                             style="color:#9cd6b7;font-size:14px">Web/Mac/Win/Android/iOS</span>
