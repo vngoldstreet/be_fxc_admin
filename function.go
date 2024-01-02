@@ -463,7 +463,7 @@ func approvalContest(c *gin.Context) {
 
 	//Lấy 1 tài khoản đã tạo từ store
 	accountStore := AccountStores{}
-	if err := tx.Where("type_id = ? and status_id=0", contestInList.TypeID).First(&accountStore).Error; err != nil {
+	if err := tx.Where("type_id = ? and status_id = 0", contestInList.TypeID).Order("id asc").Limit(1).Find(&accountStore).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -474,14 +474,14 @@ func approvalContest(c *gin.Context) {
 	currentContest.FxInvesterPw = accountStore.FxInvesterPw
 	currentContest.StatusID = 1
 
-	if err := tx.Save(&currentContest).Error; err != nil {
+	if err := tx.Model(&Contests{}).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Updates(currentContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	accountStore.StatusID = 1
-	if err := tx.Save(&accountStore).Error; err != nil {
+	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", accountStore.FxID).Updates(accountStore).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -501,6 +501,12 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
+	if row := tx.Model(&RawMT5Datas{}).Where("login = ?", currentContest.FxID).Find(&listContest).RowsAffected; row > 0 {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error"})
+		return
+	}
+
 	newLeaderBoard := RawMT5Datas{
 		Login:     currentContest.FxID,
 		Name:      user.Name,
@@ -510,7 +516,7 @@ func approvalContest(c *gin.Context) {
 		Equity:    float64(listContest.StartBalance),
 	}
 
-	if err := tx.Save(&newLeaderBoard).Error; err != nil {
+	if err := tx.Create(&newLeaderBoard).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
