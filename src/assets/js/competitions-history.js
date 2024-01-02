@@ -1,7 +1,5 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlTransactionList = baseUrl + "/auth/get-history-competition-request-list";
-const goldRate = 24000;
+let urlHistoryOfCompetionList = "/auth/get-history-competition-request-list";
+let goldRate = 24000;
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
@@ -22,19 +20,19 @@ function redirectToURL(targetUrl) {
 }
 
 function GetListOfTransactions() {
-    const jwtToken = getCookie("token");
+    let jwtToken = getCookie("token");
 
     if (!jwtToken) {
         redirectToURL('/login');
         return;
     }
 
-    const headers = new Headers({
+    let headers = new Headers({
         "Content-Type": "application/json",
         'Authorization': `Bearer ${jwtToken}`
     });
 
-    fetch(urlTransactionList, {
+    fetch(urlHistoryOfCompetionList, {
         method: "GET",
         headers: headers
     })
@@ -47,7 +45,7 @@ function GetListOfTransactions() {
         })
         .then(dataResponse => {
             let htmlPrint = "";
-            const userInfo = JSON.parse(localStorage.getItem('user'));
+            let userInfo = JSON.parse(localStorage.getItem('user'));
             let transactionData = dataResponse.data
             for (let key in transactionData) {
                 let text_type = "";
@@ -94,10 +92,10 @@ function GetListOfTransactions() {
                         bg_class = "bg-danger";
                         break;
                 }
-                const updated_at = new Date(transactionData[key].UpdatedAt).toLocaleString();
-                const created_at = new Date(transactionData[key].CreatedAt).toLocaleString();
-                const number = Number(key) + 1;
-                const amount = Number(transactionData[key].amount).toLocaleString();
+                let updated_at = new Date(transactionData[key].UpdatedAt).toLocaleString();
+                let created_at = new Date(transactionData[key].CreatedAt).toLocaleString();
+                let number = Number(key) + 1;
+                let amount = Number(transactionData[key].amount).toLocaleString();
                 let vndAmount = Number(transactionData[key].amount) * goldRate
                 htmlPrint += `
                     <tr>

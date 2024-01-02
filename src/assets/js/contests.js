@@ -1,8 +1,6 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlContestList = baseUrl + "/auth/get-contest-list";
-const urlUpdateContest = baseUrl + "/auth/update-contest-id";
-const urlCreatedContest = baseUrl + "/auth/create-contest";
+let urlContestList = "/auth/get-contest-list";
+let urlUpdateContest = "/auth/update-contest-id";
+let urlCreatedContest = "/auth/create-contest";
 
 function getCookie(cookieName) {
   var name = cookieName + "=";
@@ -24,14 +22,14 @@ function redirectToURL(targetUrl) {
 
 function GetListOfContests() {
   $("#create_contest").prop("disabled", false);
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
 
   if (!jwtToken) {
     redirectToURL('/login');
     return;
   }
 
-  const headers = new Headers({
+  let headers = new Headers({
     "Content-Type": "application/json",
     'Authorization': `Bearer ${jwtToken}`
   });
@@ -49,7 +47,7 @@ function GetListOfContests() {
     .then(dataResponse => {
       let htmlPrint = "";
       let contestDatas = dataResponse.data
-      console.log(contestDatas)
+      // console.log(contestDatas)
       let text_status = "";
       let bg_class = "";
       for (let key in contestDatas) {
@@ -137,7 +135,8 @@ function GetListOfContests() {
 $(document).ready(function () {
   GetListOfContests()
 
-  $("#create_contest").click(function () {
+  $("#create_contest").on("click", function (e) {
+    e.preventDefault()
     $("#create_contest").prop("disabled", true);
     let amount = $("#inpAmount").val()
     let max_person = $("#inpMaximumPerson").val()
@@ -159,7 +158,7 @@ $(document).ready(function () {
     var extractedTimeEnd = dateend.toISOString().split('T')[1].split('Z')[0];
     var time_end = extractedDateEnd + " " + extractedTimeEnd
 
-    const inpCreate = {
+    let inpCreate = {
       "amount": Number(amount),
       "maximum_person": Number(max_person),
       "start_balance": Number(start_balance),
@@ -171,13 +170,13 @@ $(document).ready(function () {
 
     console.log(JSON.stringify(inpCreate))
 
-    const jwtToken = getCookie("token");
+    let jwtToken = getCookie("token");
     if (!jwtToken) {
       console.error("Error: JWT token is missing.");
       return;
     }
 
-    const headers = new Headers({
+    let headers = new Headers({
       'Authorization': `Bearer ${jwtToken}`
     });
 
@@ -217,23 +216,24 @@ function EditingContest(contest_id, status_id, type_id) {
   $("#inpStatusID").val(status_id)
   $("#inpTypeID").val(type_id)
 
-  $("#confirm_for_contest").click(function () {
+  $("#confirm_for_contest").on("click", function (e) {
+    e.preventDefault()
     $("#confirm_for_contest").prop("disabled", true);
     let stID = $("#inpStatusID").val();
     let newInpTypeID = $("#inpTypeID").val();
-    const jwtToken = getCookie("token");
+    let jwtToken = getCookie("token");
     if (!jwtToken) {
       console.error("Error: JWT token is missing.");
       return;
     }
 
-    const inpApproval = {
+    let inpApproval = {
       "contest_id": contest_id,
       "status_id": Number(stID),
       "type_id": Number(newInpTypeID)
     };
 
-    const headers = new Headers({
+    let headers = new Headers({
       'Authorization': `Bearer ${jwtToken}`
     });
 

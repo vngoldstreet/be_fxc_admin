@@ -1,7 +1,4 @@
-
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlUpload = baseUrl + "/auth/create-post";
+let urlUpload = "/auth/create-post";
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
@@ -18,7 +15,6 @@ function getCookie(cookieName) {
 }
 
 $(document).ready(function () {
-
     $("#input_tag").keypress(function (event) {
         if (event.which === 13) {
             event.preventDefault();
@@ -85,7 +81,8 @@ $(document).ready(function () {
     });
 
     let output_url = ""
-    $("#generate_url").click(function () {
+    $("#generate_url").on("click", function (e) {
+        e.preventDefault()
         var title = $("#input_title").val();
         var resultUrl = cleanAndGenerateUrl(title);
         $("#input_url").val(resultUrl);
@@ -106,7 +103,8 @@ $(document).ready(function () {
 
     $("#fb_tag").html(output_tag_generate);
     let output_keyword = ""
-    $("#generate_tag").click(function () {
+    $("#generate_tag").on("click", function (e) {
+        e.preventDefault()
         let rawTag = $("#input_tag").val()
         output_keyword += rawTag + ", "
         output_tag_generate += `<a class="mt-2 ms-2 badge bg-warning rounded-1 fw-semibold" href="${baseUrl}/public/get-post-by-tag?tag=#${rawTag}">#${rawTag}</a>`
@@ -114,7 +112,8 @@ $(document).ready(function () {
         $("#input_tag").val("")
     });
 
-    $("#save_to_local_store").click(function () {
+    $("#save_to_local_store").on("click", function (e) {
+        e.preventDefault()
         let output_title = $("#input_title").val();
         let output_description = $("#input_description").val();
         let output_tag = output_tag_generate;
@@ -140,7 +139,8 @@ $(document).ready(function () {
         $("#fb_msg_create").addClass("text-success").text(JSON.stringify(post_data))
     })
 
-    $("#post_to_server").click(function () {
+    $("#post_to_server").on("click", function (e) {
+        e.preventDefault()
         let output_title = $("#input_title").val();
         let output_description = $("#input_description").val();
         let output_tag = output_tag_generate;
@@ -163,13 +163,13 @@ $(document).ready(function () {
             "keyword": output_keyword
         };
 
-        const jwtToken = getCookie("token");
+        let jwtToken = getCookie("token");
         if (!jwtToken) {
             console.error("Error: JWT token is missing.");
             return;
         }
 
-        const headers = new Headers({
+        let headers = new Headers({
             'Authorization': `Bearer ${jwtToken}`
         });
 

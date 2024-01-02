@@ -1,6 +1,4 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlUpload = baseUrl + "/auth/upload-csv";
+let urlUpload = "/auth/upload-csv";
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
@@ -17,18 +15,19 @@ function getCookie(cookieName) {
 }
 
 $(document).ready(function () {
-    $('#send_upload_file').click(function () {
+    $('#send_upload_file').on("click", function (e) {
+        e.preventDefault()
         var fileInput = $('#inputGroupFile02')[0].files[0]; // Get the selected file
         console.log(fileInput)
         if (fileInput) {
-            const jwtToken = getCookie("token");
+            let jwtToken = getCookie("token");
             if (!jwtToken) {
                 console.error("Error: JWT token is missing.");
                 return;
             }
             var formData = new FormData();
             formData.append('file', fileInput); // Create a FormData object and append the file to it
-            const headers = new Headers({
+            let headers = new Headers({
                 'Authorization': `Bearer ${jwtToken}`
             });
             console.log(formData)

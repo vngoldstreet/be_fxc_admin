@@ -1,8 +1,6 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlInreviewList = baseUrl + "/auth/get-review-list";
-const urlInreviewUpdate = baseUrl + "/auth/update-review-list";
-const goldRate = 24000;
+let urlInreviewList = "/auth/get-review-list";
+let urlInreviewUpdate = "/auth/update-review-list";
+let goldRate = 24000;
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
@@ -23,14 +21,14 @@ function redirectToURL(targetUrl) {
 }
 
 function GetListInReviews() {
-    const jwtToken = getCookie("token");
+    let jwtToken = getCookie("token");
 
     if (!jwtToken) {
         redirectToURL('/login');
         return;
     }
 
-    const headers = new Headers({
+    let headers = new Headers({
         "Content-Type": "application/json",
         'Authorization': `Bearer ${jwtToken}`
     });
@@ -101,24 +99,25 @@ function ShowImage(param) {
 function Confirmation(customer_id, status) {
     $("#inpCustomerID").attr("value", customer_id)
     $("#inpStatus").attr("value", status)
-    $("#confirm_for_inreview").click(function () {
+    $("#confirm_for_inreview").on("click", function (e) {
+        e.preventDefault()
         SendRequest(customer_id, status);
     });
 }
 
 function SendRequest(customer_id, status) {
-    const jwtToken = getCookie("token");
+    let jwtToken = getCookie("token");
     if (!jwtToken) {
         console.error("Error: JWT token is missing.");
         return;
     }
 
-    const inpApproval = {
+    let inpApproval = {
         "customer_id": customer_id,
         "status": status,
     };
 
-    const headers = new Headers({
+    let headers = new Headers({
         'Authorization': `Bearer ${jwtToken}`
     });
     console.log(JSON.stringify(inpApproval))

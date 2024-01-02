@@ -18,11 +18,11 @@ $(document).ready(function () {
     } else {
         $("#avata-img").attr("src", userInfo.image)
     }
-    $("#submit_logout").click(function () {
-        // Clear the 'token' cookie and redirect to the login page
-        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
-        localStorage.removeItem("user");
-        localStorage.removeItem("data");
-        window.location.href = "/login";
-    });
 });
+
+function Logout() {
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+    localStorage.removeItem("user");
+    localStorage.removeItem("data");
+    window.location.href = "/login";
+}

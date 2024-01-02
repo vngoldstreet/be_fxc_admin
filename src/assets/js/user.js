@@ -1,6 +1,5 @@
-const baseUrl = "https://auth.fxchampionship.com"
-const urlReviews = baseUrl + "/auth/uuser/in-review"
-const urlUpdateUser = baseUrl + "/auth/uuser/update-user"
+let urlReviews = "/auth/uuser/in-review"
+let urlUpdateUser = "/auth/uuser/update-user"
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
@@ -17,7 +16,7 @@ function getCookie(cookieName) {
 }
 
 $(document).ready(function () {
-    const userInfo = JSON.parse(localStorage.getItem("user"))
+    let userInfo = JSON.parse(localStorage.getItem("user"))
     $("#userinfo_name").html(userInfo.name)
     $("#userinfo_email").html(userInfo.email)
     if (userInfo.image === '') {
@@ -37,10 +36,9 @@ $(document).ready(function () {
         $("#userinfo_description").html(`<p id="existing_description" class="card-text">${userInfo.description}</p>`)
     }
 
-
     // $("#userinfo_description").attr("placeholder", userInfo.description)
     if (localStorage.getItem("indentify") !== null) {
-        const indentify_data = JSON.parse(localStorage.getItem("indentify"))
+        let indentify_data = JSON.parse(localStorage.getItem("indentify"))
         $("#front_selectedImage").attr("src", indentify_data.image_front)
         $("#front_selectedImage").addClass("indentify-img w-100 mt-3 rounded border border-secondary")
         $("#back_selectedImage").attr("src", indentify_data.image_back)
@@ -78,17 +76,18 @@ $(document).ready(function () {
             reader.readAsDataURL(file);
         }
     });
-    $("#indentify_update").click(function () {
+    $("#indentify_update").on("click", function (e) {
+        e.preventDefault()
         if (img_front === '' || img_back === '') {
             window.alert("Please upload the front and back images of the national ID card first.");
             return;
         }
-        const inpReview = {
+        let inpReview = {
             "image_front": img_front,
             "image_back": img_back
         };
-        const jwtToken = getCookie("token");
-        const headers = new Headers({
+        let jwtToken = getCookie("token");
+        let headers = new Headers({
             'Authorization': `Bearer ${jwtToken}`
         });
         $("#indentify_update").addClass("disabled")
@@ -114,7 +113,7 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    const userInfo = JSON.parse(localStorage.getItem("user"))
+    let userInfo = JSON.parse(localStorage.getItem("user"))
     let img_avata = userInfo.image
     let inpDescription = userInfo.description
     $("#avatarInput").on("change", function (event) {
@@ -133,20 +132,20 @@ $(document).ready(function () {
         $("#userinfo_description").html(`<textarea id="inp_description" class="form-control" rows="7" aria-label="With textarea">`)
         $("#inp_description").val(userInfo.description)
     })
-    $("#user_info_updated").click(function () {
+    $("#user_info_updated").on("click", function (e) {
+        e.preventDefault()
         inpDescription = $("#inp_description").val()
         if (inpDescription === undefined) {
             inpDescription = userInfo.description
         }
-        const jwtToken = getCookie("token");
-        const headers = new Headers({
+        let jwtToken = getCookie("token");
+        let headers = new Headers({
             'Authorization': `Bearer ${jwtToken}`
         });
-        const inpUserUpdate = {
+        let inpUserUpdate = {
             "image": img_avata,
             "description": inpDescription
         };
-        console.log(inpUserUpdate)
         fetch(urlUpdateUser, {
             method: "POST",
             headers: headers,
@@ -161,7 +160,7 @@ $(document).ready(function () {
             .then(dataResponse => {
                 userInfo.image = img_avata;
                 userInfo.description = inpDescription;
-                const user = JSON.stringify(userInfo)
+                let user = JSON.stringify(userInfo)
                 localStorage.setItem('user', JSON.stringify(userInfo));
                 window.alert("Success!")
                 window.location.reload()

@@ -1,11 +1,9 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlTransactionList = baseUrl + "/auth/get-competition-request-list";
-const urlCreateALoginID = baseUrl + "/auth/contest-approval";
-const urlRejoinToContest = baseUrl + "/auth/rejoin-contest-approval";
-const urlConfirmationTransactions = baseUrl + "/auth/admin-transaction";
-const urlRejectTransactions = baseUrl + "/auth/cancel-transaction";
-const goldRate = 24000;
+let urlCompetitionList = "/auth/get-competition-request-list";
+let urlCreateALoginID = "/auth/contest-approval";
+let urlRejoinToContest = "/auth/rejoin-contest-approval";
+let urlConfirmationTransactions = "/auth/admin-transaction";
+let urlRejectTransactions = "/auth/cancel-transaction";
+let goldRate = 24000;
 
 function getCookie(cookieName) {
   var name = cookieName + "=";
@@ -26,19 +24,19 @@ function redirectToURL(targetUrl) {
 }
 
 function GetListOfTransactions() {
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
 
   if (!jwtToken) {
     redirectToURL('/login');
     return;
   }
 
-  const headers = new Headers({
+  let headers = new Headers({
     "Content-Type": "application/json",
     'Authorization': `Bearer ${jwtToken}`
   });
 
-  fetch(urlTransactionList, {
+  fetch(urlCompetitionList, {
     method: "GET",
     headers: headers
   })
@@ -102,10 +100,10 @@ function GetListOfTransactions() {
             bg_class = "bg-danger";
             break;
         }
-        const updated_at = new Date(transactionData[key].UpdatedAt).toLocaleString();
-        const created_at = new Date(transactionData[key].CreatedAt).toLocaleString();
-        const number = Number(key) + 1;
-        const amount = Number(transactionData[key].amount).toLocaleString();
+        let updated_at = new Date(transactionData[key].UpdatedAt).toLocaleString();
+        let created_at = new Date(transactionData[key].CreatedAt).toLocaleString();
+        let number = Number(key) + 1;
+        let amount = Number(transactionData[key].amount).toLocaleString();
         let vndAmount = Number(transactionData[key].amount) * goldRate
 
         htmlPrint += `
@@ -161,7 +159,8 @@ function ShowTransactionInformation(transaction_id, customer_id, contest_id, nam
   $("#inpContestID").attr("value", contest_id)
   $("#inpCustomerID").attr("value", `${customer_id} - ${name}`)
 
-  $("#confirm_for_transaction").click(function () {
+  $("#confirm_for_transaction").on("click", function (e) {
+    e.preventDefault()
     $("#confirm_for_transaction").prop("disabled", true);
 
     // let fx_id_text = $("#inpLoginID").val();
@@ -206,7 +205,8 @@ function ShowRejoin(param_id, customer_id, contest_id, name) {
   $("#inpContestIDRejoin").attr("value", contest_id)
   $("#inpCustomerIDRejoin").attr("value", `${customer_id} - ${name}`)
 
-  $("#confirm_for_rejoin").click(function () {
+  $("#confirm_for_rejoin").on("click", function (e) {
+    e.preventDefault()
     ApprovalRejoinToContest(contest_id, customer_id)
     ConfirmTransaction(param_id);
   });
@@ -224,7 +224,7 @@ function ApprovalRejoinToContest(contest_id, customer_id) {
     "customer_id": customer_id
   };
 
-  const headers = new Headers({
+  let headers = new Headers({
     'Authorization': `Bearer ${jwtToken}`
   });
   // console.log(JSON.stringify(inpApproval))
@@ -251,13 +251,13 @@ function ApprovalRejoinToContest(contest_id, customer_id) {
 }
 //, fx_id, fx_master_password, fx_investor_password
 function CreateMetaTraderData(contest_id, customer_id, transaction_id) {
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
   if (!jwtToken) {
     console.error("Error: JWT token is missing.");
     return;
   }
 
-  const inpApproval = {
+  let inpApproval = {
     "contest_id": contest_id,
     "customer_id": customer_id
     // "fx_id": fx_id,
@@ -265,7 +265,7 @@ function CreateMetaTraderData(contest_id, customer_id, transaction_id) {
     // "fx_invester_pw": fx_investor_password,
   };
   // console.log(JSON.stringify(inpApproval))
-  const headers = new Headers({
+  let headers = new Headers({
     'Authorization': `Bearer ${jwtToken}`
   });
 
@@ -295,17 +295,17 @@ function CreateMetaTraderData(contest_id, customer_id, transaction_id) {
 }
 
 function ConfirmRejectTransaction(param_id) {
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
   if (!jwtToken) {
     console.error("Error: JWT token is missing.");
     return;
   }
 
-  const inpReject = {
+  let inpReject = {
     "id": param_id
   };
 
-  const headers = new Headers({
+  let headers = new Headers({
     'Authorization': `Bearer ${jwtToken}`
   });
 
@@ -345,7 +345,8 @@ function CancelTransaction(param_id, name, amount, contest_id) {
   `
 
   $("#transaction-information-reject").html(html_text)
-  $("#reject_for_transaction").click(function () {
+  $("#reject_for_transaction").on("click", function (e) {
+    e.preventDefault()
     $("#reject_for_transaction").prop("disabled", true);
     ConfirmRejectTransaction(param_id);
   });
@@ -353,20 +354,20 @@ function CancelTransaction(param_id, name, amount, contest_id) {
 
 
 function ConfirmTransaction(param_id) {
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
   if (!jwtToken) {
     console.error("Error: JWT token is missing.");
     return;
   }
 
-  const inpApproval = {
+  let inpApproval = {
     "id": param_id
   };
 
-  const headers = new Headers({
+  let headers = new Headers({
     'Authorization': `Bearer ${jwtToken}`
   });
-  console.log(JSON.stringify(inpApproval))
+  // console.log(JSON.stringify(inpApproval))
   fetch(urlConfirmationTransactions, {
     method: "POST",
     headers: headers,

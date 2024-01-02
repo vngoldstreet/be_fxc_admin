@@ -1,6 +1,5 @@
-const baseUrl = "https://auth.fxchampionship.com"
-const urlReviews = baseUrl + "/auth/uuser/in-review"
-const urlUpdatePassword = baseUrl + "/auth/uuser/update-password"
+const urlReviews = "/auth/uuser/in-review"
+const urlUpdatePassword = "/auth/uuser/update-password"
 
 function getCookie(cookieName) {
     var name = cookieName + "=";

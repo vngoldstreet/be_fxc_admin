@@ -1,7 +1,5 @@
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlContestList = baseUrl + "/auth/get-history-contest-list";
-const urlUpdateContest = baseUrl + "/auth/update-contest-id";
+let urlHistoryContestList = "/auth/get-history-contest-list";
+let urlUpdateContest = "/auth/update-contest-id";
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
@@ -22,19 +20,19 @@ function redirectToURL(targetUrl) {
 }
 
 function GetListOfContests() {
-    const jwtToken = getCookie("token");
+    let jwtToken = getCookie("token");
 
     if (!jwtToken) {
         redirectToURL('/login');
         return;
     }
 
-    const headers = new Headers({
+    let headers = new Headers({
         "Content-Type": "application/json",
         'Authorization': `Bearer ${jwtToken}`
     });
 
-    fetch(urlContestList, {
+    fetch(urlHistoryContestList, {
         method: "GET",
         headers: headers
     })
@@ -128,18 +126,18 @@ function EditingContest(contest_id, status_id) {
     $("#confirm_for_contest").click(function () {
         let stID = $("#inpStatusID").val();
         let new_status_id = Number(stID)
-        const jwtToken = getCookie("token");
+        let jwtToken = getCookie("token");
         if (!jwtToken) {
             console.error("Error: JWT token is missing.");
             return;
         }
 
-        const inpApproval = {
+        let inpApproval = {
             "contest_id": contest_id,
             "status_id": new_status_id,
         };
 
-        const headers = new Headers({
+        let headers = new Headers({
             'Authorization': `Bearer ${jwtToken}`
         });
         console.log(JSON.stringify(inpApproval))

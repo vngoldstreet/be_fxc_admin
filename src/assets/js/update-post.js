@@ -1,9 +1,6 @@
-
-const baseUrl = "https://admin.fxchampionship.com";
-// const baseUrl = "http://localhost:8081";
-const urlUpdate = baseUrl + "/auth/update-post";
-const urlDelete = baseUrl + "/auth/delete-post?id=";
-const urlGetListOfPost = baseUrl + "/public/posts";
+let urlUpdate = "/auth/update-post";
+let urlDelete = "/auth/delete-post?id=";
+let urlGetListOfPost = "/public/posts";
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
@@ -165,14 +162,16 @@ function UpdatePost(id_param) {
             });
 
             let output_url = ""
-            $("#generate_url").click(function () {
+            $("#generate_url").on("click", function (e) {
+                e.preventDefault()
                 var title = $("#input_title").val();
                 var resultUrl = cleanAndGenerateUrl(title);
                 $("#input_url").val(resultUrl);
                 output_url = resultUrl
             });
 
-            $("#post_to_server").click(function () {
+            $("#post_to_server").on("click", function (e) {
+                e.preventDefault()
                 $("#post_to_server").prop("disabled", true);
                 let output_title = $("#input_title").val();
                 let output_description = $("#input_description").val();
@@ -197,13 +196,13 @@ function UpdatePost(id_param) {
                     "keyword": output_keyword
                 };
 
-                const jwtToken = getCookie("token");
+                let jwtToken = getCookie("token");
                 if (!jwtToken) {
                     console.error("Error: JWT token is missing.");
                     return;
                 }
 
-                const headers = new Headers({
+                let headers = new Headers({
                     'Authorization': `Bearer ${jwtToken}`
                 });
                 // console.log(JSON.stringify(post_data))
@@ -252,14 +251,15 @@ function DeletePost(id_param) {
             $("#title_delete").text(saveData.title);
             $("#delete_desc").text(saveData.description);
             $("#delete_thumb").html(`<img class="img-inreview" src="${baseUrl + '/public/image/' + saveData.url}" alt="">`);
-            $("#delete_to_server").click(function () {
+            $("#delete_to_server").on("click", function (e) {
+                e.preventDefault()
                 $("#delete_to_server").prop("disabled", true);
-                const jwtToken = getCookie("token");
+                let jwtToken = getCookie("token");
                 if (!jwtToken) {
                     console.error("Error: JWT token is missing.");
                     return;
                 }
-                const headers = new Headers({
+                let headers = new Headers({
                     'Authorization': `Bearer ${jwtToken}`
                 });
                 let url_delete = urlDelete + saveData.ID

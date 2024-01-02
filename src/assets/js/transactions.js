@@ -1,8 +1,7 @@
-const baseUrl = "https://admin.fxchampionship.com";
-const urlTransactionList = baseUrl + "/auth/get-transaction-list";
-const urlConfirmationTransactions = baseUrl + "/auth/admin-transaction";
-const urlRejectTransactions = baseUrl + "/auth/cancel-transaction";
-const goldRate = 24000;
+let urlTransactionList = "/auth/get-transaction-list";
+let urlConfirmationTransactions = "/auth/admin-transaction";
+let urlRejectTransactions = "/auth/cancel-transaction";
+let goldRate = 24000;
 
 function getCookie(cookieName) {
   var name = cookieName + "=";
@@ -23,14 +22,14 @@ function redirectToURL(targetUrl) {
 }
 
 function GetListOfTransactions() {
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
 
   if (!jwtToken) {
     redirectToURL('/login');
     return;
   }
 
-  const headers = new Headers({
+  let headers = new Headers({
     "Content-Type": "application/json",
     'Authorization': `Bearer ${jwtToken}`
   });
@@ -94,10 +93,10 @@ function GetListOfTransactions() {
             bg_class = "bg-danger";
             break;
         }
-        const updated_at = new Date(transactionData[key].UpdatedAt).toLocaleString();
-        const created_at = new Date(transactionData[key].CreatedAt).toLocaleString();
-        const number = Number(key) + 1;
-        const amount = Number(transactionData[key].amount).toLocaleString();
+        let updated_at = new Date(transactionData[key].UpdatedAt).toLocaleString();
+        let created_at = new Date(transactionData[key].CreatedAt).toLocaleString();
+        let number = Number(key) + 1;
+        let amount = Number(transactionData[key].amount).toLocaleString();
         let vndAmount = Number(transactionData[key].amount) * goldRate
         htmlPrint += `
                     <tr>
@@ -148,6 +147,12 @@ function GetListOfTransactions() {
 }
 
 $(document).ready(function () {
+  let jwtToken = getCookie("token");
+
+  if (!jwtToken) {
+    redirectToURL('/login');
+    return;
+  }
   GetListOfTransactions()
 })
 
@@ -162,7 +167,8 @@ function ShowTransactionInformation(param_id, name, amount) {
   `
 
   $("#transaction-information").html(html_text)
-  $("#confirm_for_transaction").click(function () {
+  $("#confirm_for_transaction").on("click", function (e) {
+    e.preventDefault()
     $("#confirm_for_transaction").prop("disabled", true);
     ConfirmTransaction(param_id);
   });
@@ -179,7 +185,8 @@ function CancelTransaction(param_id, name, amount) {
   `
 
   $("#transaction-information-reject").html(html_text)
-  $("#reject_for_transaction").click(function () {
+  $("#reject_for_transaction").on("click", function (e) {
+    e.preventDefault()
     $("#reject_for_transaction").prop("disabled", true);
     ConfirmRejectTransaction(param_id);
   });
@@ -188,17 +195,17 @@ function CancelTransaction(param_id, name, amount) {
 
 
 function ConfirmTransaction(param_id) {
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
   if (!jwtToken) {
     console.error("Error: JWT token is missing.");
     return;
   }
 
-  const inpApproval = {
+  let inpApproval = {
     "id": param_id
   };
 
-  const headers = new Headers({
+  let headers = new Headers({
     'Authorization': `Bearer ${jwtToken}`
   });
 
@@ -226,17 +233,17 @@ function ConfirmTransaction(param_id) {
 }
 
 function ConfirmRejectTransaction(param_id) {
-  const jwtToken = getCookie("token");
+  let jwtToken = getCookie("token");
   if (!jwtToken) {
     console.error("Error: JWT token is missing.");
     return;
   }
 
-  const inpReject = {
+  let inpReject = {
     "id": param_id
   };
 
-  const headers = new Headers({
+  let headers = new Headers({
     'Authorization': `Bearer ${jwtToken}`
   });
 

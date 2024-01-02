@@ -1,5 +1,4 @@
-const baseUrl = "https://auth.fxchampionship.com";
-const urlLeaderBoard = baseUrl + "/auth/contest/get-leaderboard-by-contestid";
+const urlLeaderBoard = "/auth/contest/get-leaderboard-by-contestid";
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
