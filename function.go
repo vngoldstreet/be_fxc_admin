@@ -190,13 +190,13 @@ func upLoadFunc(c *gin.Context) {
 			for _, new := range newUpload {
 				// fmt.Printf("new.Login: %v - Current: %v\n", new.Login, current.Login)
 				if current.Login == new.Login {
-					updates := RawMT5Datas{
-						Balance:    new.Balance,
-						Equity:     new.Equity,
-						Profit:     new.Profit,
-						FloatingPL: new.FloatingPL,
-					}
-					if err := db_ksc.Model(&current).Where("login = ?", current.Login).Updates(updates).Error; err != nil {
+					// updates := RawMT5Datas{
+					// 	Balance:    new.Balance,
+					// 	Equity:     new.Equity,
+					// 	Profit:     new.Profit,
+					// 	FloatingPL: new.FloatingPL,
+					// }
+					if err := db_ksc.Model(&RawMT5Datas{}).Where("login = ?", current.Login).Updates(map[string]interface{}{"balance": new.Balance, "equity": new.Equity, "profit": new.Profit, "floating_pl": new.FloatingPL}).Error; err != nil {
 						c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 						return
 					}
