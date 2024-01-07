@@ -225,6 +225,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 	d := mail.NewDialer(smtpHost, smtpPort, username, password)
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Println(err)
+		return err
 	} else {
 		fmt.Printf("Send email to: %s\n", toEmail)
 	}
@@ -460,6 +461,7 @@ func SendEmailForRegister(toEmail string, account string, user_password string) 
 	d := mail.NewDialer(smtpHost, smtpPort, username, password)
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Println(err)
+		return err
 	} else {
 		fmt.Printf("Send email to: %s\n", toEmail)
 	}
@@ -695,6 +697,7 @@ func SendEmailForResetPassword(toEmail string, account string, user_password str
 	d := mail.NewDialer(smtpHost, smtpPort, username, password)
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Println(err)
+		return err
 	} else {
 		fmt.Printf("Send email to: %s\n", toEmail)
 	}
