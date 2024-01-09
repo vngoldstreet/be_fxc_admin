@@ -285,7 +285,7 @@ function CreateMetaTraderData(contest_id, customer_id, transaction_id) {
       let html = `<code class='w-100 text-success'>${stringData}</code>`
       $("#join_contest_message").removeClass().addClass("fw-semibold");
       $("#join_contest_message").html(html);
-      GetListOfTransactions()
+      ConfirmTransaction(transaction_id);
     })
     .catch(error => {
       let html = `<code class='w-100 text-danger'>${error}</code>`

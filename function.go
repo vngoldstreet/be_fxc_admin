@@ -447,14 +447,7 @@ func approvalContest(c *gin.Context) {
 
 	//Lấy thông tin khách hàng đã đăng ký tham gia cuộc thi
 	currentContest := Contests{}
-	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).First(&currentContest).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	transaction := CpsTransactions{}
-	if err := tx.Model(&transaction).Where("customer_id = ? and contest_id = ? and status_id=1", input.CustomerID, input.ContestID).First(&transaction).Error; err != nil {
+	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -508,7 +501,8 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
-	if row := tx.Model(&RawMT5Datas{}).Where("login = ?", currentContest.FxID).Find(&listContest).RowsAffected; row > 0 {
+	currentLeaderBoard := RawMT5Datas{}
+	if row := tx.Model(&RawMT5Datas{}).Where("login = ?", currentContest.FxID).Find(&currentLeaderBoard).RowsAffected; row > 0 {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error"})
 		return
@@ -528,35 +522,6 @@ func approvalContest(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	transaction.StatusID = 2
-	if err := tx.Model(&CpsTransactions{}).Where("id = ?", transaction.ID).Updates(transaction).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	///-----------
-	wallet := CpsWallets{}
-	if err := tx.Model(wallet).Where("customer_id = ?", user.ID).First(&wallet).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	type_string := CheckTransactiontype(transaction.TypeID)
-	formatMessage2 := "Join a contest complete: %d\nCustomer: %s (%d - %s)\nType: %s\nBalance: %sG"
-	msg2 := fmt.Sprintf(formatMessage2, transaction.ID, user.Name, user.ID, user.Email, type_string, NumberToString(int(wallet.Balance), ','))
-
-	if err := SaveToMessages(2, msg2); err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	//Delete from redis
-	keysToDelete2 := []string{}
-	keysToDelete2 = append(keysToDelete2, setKey(transaction.CustomerID, db_greetings))
-	if _, err := rdb.Del(context.Background(), keysToDelete2...).Result(); err != nil {
-		fmt.Printf("err Del Redis key: %v\n", err)
-	}
-	//---------
 
 	formatMessage := "Approved a customer's participation in the contest: %s\nCustomer: %s (%d - %s)\nFxID: %s\nFxInvesterPw: %s"
 	msg := fmt.Sprintf(formatMessage, input.ContestID, user.Name, input.CustomerID, user.Email, currentContest.FxID, currentContest.FxInvesterPw)
