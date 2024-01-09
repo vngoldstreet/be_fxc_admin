@@ -447,7 +447,7 @@ func approvalContest(c *gin.Context) {
 
 	//Lấy thông tin khách hàng đã đăng ký tham gia cuộc thi
 	currentContest := Contests{}
-	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id = 0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
+	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -463,7 +463,25 @@ func approvalContest(c *gin.Context) {
 
 	//Lấy 1 tài khoản đã tạo từ store
 	accountStore := AccountStores{}
-	if err := tx.Where("type_id = ? and status_id = 0", contestInList.TypeID).Limit(1).First(&accountStore).Error; err != nil {
+	if err := tx.Where("type_id = ? and status_id = 0", contestInList.TypeID).Limit(1).Find(&accountStore).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	currentContest.FxID = accountStore.FxID
+	currentContest.FxMasterPw = accountStore.FxMasterPw
+	currentContest.FxInvesterPw = accountStore.FxInvesterPw
+	currentContest.StatusID = 1
+
+	if err := tx.Model(&Contests{}).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Updates(currentContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	accountStore.StatusID = 1
+	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", accountStore.FxID).Updates(accountStore).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -517,6 +535,7 @@ func approvalContest(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	currentTrans.StatusID = 2
 	if err := tx.Save(&currentTrans).Error; err != nil {
 		tx.Rollback()
@@ -526,24 +545,6 @@ func approvalContest(c *gin.Context) {
 
 	wallet := CpsWallets{}
 	if err := tx.Model(wallet).Where("customer_id = ?", input.CustomerID).First(&wallet).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	accountStore.StatusID = 1
-	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", accountStore.FxID).Updates(accountStore).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	currentContest.FxID = accountStore.FxID
-	currentContest.FxMasterPw = accountStore.FxMasterPw
-	currentContest.FxInvesterPw = accountStore.FxInvesterPw
-	currentContest.StatusID = 1
-
-	if err := tx.Model(&Contests{}).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Updates(currentContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
