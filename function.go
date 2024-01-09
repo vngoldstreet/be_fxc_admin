@@ -447,7 +447,7 @@ func approvalContest(c *gin.Context) {
 
 	//Lấy thông tin khách hàng đã đăng ký tham gia cuộc thi
 	currentContest := Contests{}
-	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
+	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id = 0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -463,25 +463,7 @@ func approvalContest(c *gin.Context) {
 
 	//Lấy 1 tài khoản đã tạo từ store
 	accountStore := AccountStores{}
-	if err := tx.Where("type_id = ? and status_id = 0", contestInList.TypeID).Order("id asc").Limit(1).Find(&accountStore).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	currentContest.FxID = accountStore.FxID
-	currentContest.FxMasterPw = accountStore.FxMasterPw
-	currentContest.FxInvesterPw = accountStore.FxInvesterPw
-	currentContest.StatusID = 1
-
-	if err := tx.Model(&Contests{}).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Updates(currentContest).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	accountStore.StatusID = 1
-	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", accountStore.FxID).Updates(accountStore).Error; err != nil {
+	if err := tx.Where("type_id = ? and status_id = 0", contestInList.TypeID).Limit(1).First(&accountStore).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -549,6 +531,24 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
+	accountStore.StatusID = 1
+	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", accountStore.FxID).Updates(accountStore).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	currentContest.FxID = accountStore.FxID
+	currentContest.FxMasterPw = accountStore.FxMasterPw
+	currentContest.FxInvesterPw = accountStore.FxInvesterPw
+	currentContest.StatusID = 1
+
+	if err := tx.Model(&Contests{}).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Updates(currentContest).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	//========================================
 	tx.Commit()
 	formatMessage := "Approved a customer's participation in the contest: %s\nCustomer: %s (%d - %s)\nFxID: %s\nFxInvesterPw: %s"
@@ -571,11 +571,11 @@ func approvalContest(c *gin.Context) {
 	}
 
 	//Delete from redis
-	keysToDelete := []string{}
-	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
-	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
-		fmt.Printf("err Del Redis key: %v\n", err)
-	}
+	// keysToDelete := []string{}
+	// keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
+	// if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
+	// 	fmt.Printf("err Del Redis key: %v\n", err)
+	// }
 
 	c.JSON(http.StatusOK, gin.H{"data": currentContest})
 }
