@@ -1,86 +1,84 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-type RequestInfo struct {
-	IP  string
-	UID uint
-}
+// type RequestInfo struct {
+// 	IP  string
+// 	UID uint
+// }
 
-type ClientTracker struct {
-	Counters   map[RequestInfo]int
-	Mutex      sync.Mutex
-	LockTimers map[RequestInfo]*time.Timer
-}
+// type ClientTracker struct {
+// 	Counters   map[RequestInfo]int
+// 	Mutex      sync.Mutex
+// 	LockTimers map[RequestInfo]*time.Timer
+// }
 
-func NewClientTracker() *ClientTracker {
-	return &ClientTracker{
-		Counters:   make(map[RequestInfo]int),
-		Mutex:      sync.Mutex{},
-		LockTimers: make(map[RequestInfo]*time.Timer),
-	}
-}
+// func NewClientTracker() *ClientTracker {
+// 	return &ClientTracker{
+// 		Counters:   make(map[RequestInfo]int),
+// 		Mutex:      sync.Mutex{},
+// 		LockTimers: make(map[RequestInfo]*time.Timer),
+// 	}
+// }
 
-func TokenAndIPFilterMiddleware(tracker *ClientTracker) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if c.Request.Method == http.MethodPost {
-			ip := c.ClientIP()
-			uuid, err := ExtractTokenID(c)
-			if err != nil {
-				return
-			}
+// func TokenAndIPFilterMiddleware(tracker *ClientTracker) gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		if c.Request.Method == http.MethodPost {
+// 			ip := c.ClientIP()
+// 			uuid, err := ExtractTokenID(c)
+// 			if err != nil {
+// 				return
+// 			}
 
-			requestInfo := RequestInfo{
-				IP:  ip,
-				UID: uuid,
-			}
+// 			requestInfo := RequestInfo{
+// 				IP:  ip,
+// 				UID: uuid,
+// 			}
 
-			tracker.Mutex.Lock()
-			defer tracker.Mutex.Unlock()
+// 			tracker.Mutex.Lock()
+// 			defer tracker.Mutex.Unlock()
 
-			tracker.Counters[requestInfo]++
-			if tracker.Counters[requestInfo]%2 == 0 {
-				if _, ok := tracker.LockTimers[requestInfo]; !ok {
-					fmt.Println("Client locked. UID:", requestInfo.UID)
+// 			tracker.Counters[requestInfo]++
+// 			if tracker.Counters[requestInfo] > 10 {
+// 				if _, ok := tracker.LockTimers[requestInfo]; !ok {
+// 					fmt.Println("Client locked. UID:", requestInfo.UID)
 
-					// tx := db_ksc.Begin()
-					// resUser := CpsUsers{}
-					// if err := tx.Where("id = ?", uuid).First(&resUser).Error; err != nil {
-					// 	tx.Rollback()
-					// 	return
-					// }
+// 					// tx := db_ksc.Begin()
+// 					// resUser := CpsUsers{}
+// 					// if err := tx.Where("id = ?", uuid).First(&resUser).Error; err != nil {
+// 					// 	tx.Rollback()
+// 					// 	return
+// 					// }
 
-					// msg := fmt.Sprintf("Too many requests from this client: %d - %s (%s). Locked!", resUser.ID, resUser.Name, resUser.Email)
-					// SendMessageToAccountGroup(msg)
+// 					// msg := fmt.Sprintf("Too many requests from this client: %d - %s (%s). Locked!", resUser.ID, resUser.Name, resUser.Email)
+// 					// SendMessageToAccountGroup(msg)
 
-					// tx.Commit()
+// 					// tx.Commit()
 
-					tracker.LockTimers[requestInfo] = time.AfterFunc(3*time.Second, func() {
-						fmt.Println("Client unlocked. UID:", requestInfo.UID)
-						delete(tracker.LockTimers, requestInfo)
-						tracker.Counters[requestInfo] = 0
-					})
-				}
+// 					tracker.LockTimers[requestInfo] = time.AfterFunc(3*time.Second, func() {
+// 						fmt.Println("Client unlocked. UID:", requestInfo.UID)
+// 						delete(tracker.LockTimers, requestInfo)
+// 						tracker.Counters[requestInfo] = 0
+// 					})
+// 				}
 
-				c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "Too many requests from this client"})
-				return
-			}
-		}
-		c.Next()
-	}
-}
+// 				c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "Too many requests from this client"})
+// 				return
+// 			}
+// 		}
+// 		c.Next()
+// 	}
+// }
 
 func main() {
 	r := gin.Default()
-	clientTracker := NewClientTracker()
+	// clientTracker := NewClientTracker()
 	r.Static("/src/assets", "./src/assets")
 	r.LoadHTMLGlob("src/html/*")
 	r.Use(cors.New(cors.Config{
@@ -159,7 +157,7 @@ func main() {
 
 	private := r.Group("/auth")
 	private.Use(JwtAuthMiddleware())
-	private.Use(TokenAndIPFilterMiddleware(clientTracker))
+	// private.Use(TokenAndIPFilterMiddleware(clientTracker))
 	private.POST("/upload-csv", upLoadFunc)
 	private.POST("/upload-old-leaderboard", upLoadOldLeaderboard)
 	private.POST("/create-contest", createContest)
