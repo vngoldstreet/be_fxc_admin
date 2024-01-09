@@ -523,6 +523,34 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
+	promoCode := ""
+	if index := (listContest.CurrentPerson / listContest.MaximumPerson) * 100; index <= 50 {
+		promoCode = generatePromoCode(input.CustomerID)
+	}
+
+	//========================================
+	currentTrans := CpsTransactions{}
+	if err := tx.Model(&currentTrans).Where("customer_id = ? and contest_id = ? and status_id = 1", input.CustomerID, input.ContestID).First(&currentTrans).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	currentTrans.StatusID = 2
+	if err := tx.Save(&currentTrans).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	wallet := CpsWallets{}
+	if err := tx.Model(wallet).Where("customer_id = ?", input.CustomerID).First(&wallet).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	//========================================
+	tx.Commit()
 	formatMessage := "Approved a customer's participation in the contest: %s\nCustomer: %s (%d - %s)\nFxID: %s\nFxInvesterPw: %s"
 	msg := fmt.Sprintf(formatMessage, input.ContestID, user.Name, input.CustomerID, user.Email, currentContest.FxID, currentContest.FxInvesterPw)
 
@@ -530,11 +558,14 @@ func approvalContest(c *gin.Context) {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	promoCode := ""
-	if index := (listContest.CurrentPerson / listContest.MaximumPerson) * 100; index <= 50 {
-		promoCode = generatePromoCode(input.CustomerID)
+	type_string2 := CheckTransactiontype(currentTrans.TypeID)
+	formatMessage2 := "Join a contest complete: %d\nCustomer: %s (%d - %s)\nType: %s\nBalance: %sG"
+	msg2 := fmt.Sprintf(formatMessage2, currentTrans.ID, user.Name, user.ID, user.Email, type_string2, NumberToString(int(wallet.Balance), ','))
+
+	if err := SaveToMessages(2, msg2); err != nil {
+		fmt.Printf("err: %v\n", err)
 	}
-	tx.Commit()
+
 	if err := SendEmailForContest(user.Email, currentContest.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, promoCode); err != nil {
 		fmt.Printf("err send: %v\n", err)
 	}
