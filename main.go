@@ -47,7 +47,7 @@ func TokenAndIPFilterMiddleware(tracker *ClientTracker) gin.HandlerFunc {
 			defer tracker.Mutex.Unlock()
 
 			tracker.Counters[requestInfo]++
-			if tracker.Counters[requestInfo] > 2 {
+			if tracker.Counters[requestInfo]%2 == 0 {
 				if _, ok := tracker.LockTimers[requestInfo]; !ok {
 					fmt.Println("Client locked. UID:", requestInfo.UID)
 

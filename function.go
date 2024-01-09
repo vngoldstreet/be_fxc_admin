@@ -453,6 +453,13 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
+	transaction := CpsTransactions{}
+	if err := tx.Model(&transaction).Where("customer_id = ? and contest_id = ? and status_id=1", input.CustomerID, input.ContestID).First(&transaction).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	//Cấp tài khoản cho khách hàng
 	contestInList := ListContests{}
 	if err := tx.Select("type_id").Where("contest_id = ?", input.ContestID).Find(&contestInList).Error; err != nil {
@@ -517,6 +524,13 @@ func approvalContest(c *gin.Context) {
 	}
 
 	if err := tx.Create(&newLeaderBoard).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	transaction.StatusID = 2
+	if err := tx.Model(&CpsTransactions{}).Where("id = ?", transaction.ID).Updates(transaction).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
