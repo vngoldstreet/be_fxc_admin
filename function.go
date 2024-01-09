@@ -620,13 +620,13 @@ func approvalRejoinContest(c *gin.Context) {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	SendEmailForContest(user.Email, input.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, "")
 	//Delete from redis
 	keysToDelete := []string{}
 	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
 	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 		fmt.Printf("err Del Redis key: %v\n", err)
 	}
+	SendEmailForContest(user.Email, input.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, "")
 	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"data": currentContest})
 }
