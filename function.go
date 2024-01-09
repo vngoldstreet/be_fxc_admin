@@ -534,9 +534,8 @@ func approvalContest(c *gin.Context) {
 	if index := (listContest.CurrentPerson / listContest.MaximumPerson) * 100; index <= 50 {
 		promoCode = generatePromoCode(input.CustomerID)
 	}
-
+	tx.Commit()
 	if err := SendEmailForContest(user.Email, currentContest.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, promoCode); err != nil {
-		tx.Rollback()
 		fmt.Printf("err send: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
@@ -547,7 +546,7 @@ func approvalContest(c *gin.Context) {
 	if _, err := rdb.Del(context.Background(), keysToDelete...).Result(); err != nil {
 		fmt.Printf("err Del Redis key: %v\n", err)
 	}
-	tx.Commit()
+
 	c.JSON(http.StatusOK, gin.H{"data": currentContest})
 }
 
