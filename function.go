@@ -535,6 +535,28 @@ func approvalContest(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	///-----------
+	wallet := CpsWallets{}
+	if err := tx.Model(wallet).Where("customer_id = ?", user.ID).First(&wallet).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	type_string := CheckTransactiontype(transaction.TypeID)
+	formatMessage2 := "Join a contest complete: %d\nCustomer: %s (%d - %s)\nType: %s\nBalance: %sG"
+	msg2 := fmt.Sprintf(formatMessage2, transaction.ID, user.Name, user.ID, user.Email, type_string, NumberToString(int(wallet.Balance), ','))
+
+	if err := SaveToMessages(2, msg2); err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	//Delete from redis
+	keysToDelete2 := []string{}
+	keysToDelete2 = append(keysToDelete2, setKey(transaction.CustomerID, db_greetings))
+	if _, err := rdb.Del(context.Background(), keysToDelete2...).Result(); err != nil {
+		fmt.Printf("err Del Redis key: %v\n", err)
+	}
+	//---------
 
 	formatMessage := "Approved a customer's participation in the contest: %s\nCustomer: %s (%d - %s)\nFxID: %s\nFxInvesterPw: %s"
 	msg := fmt.Sprintf(formatMessage, input.ContestID, user.Name, input.CustomerID, user.Email, currentContest.FxID, currentContest.FxInvesterPw)

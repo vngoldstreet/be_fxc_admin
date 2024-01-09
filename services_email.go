@@ -197,7 +197,7 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																							class="il">fxchampionship</span>.com</a><br> or
 																					by phone at<a href="tel:%20+44(0)2031515550"
 																						style="color:#000000;font-weight:500;direction:ltr;text-decoration:none"
-																						target="_blank"> +84 988 886 887</a>
+																						target="_blank"> +84 919 720 567</a>
 																				</td>
 																			</tr>
 																		</tbody>
@@ -416,7 +416,7 @@ func SendEmailForRegister(toEmail string, account string, user_password string) 
                                                                         class="il">fxchampionship</span>.com</a><br> or
                                                                 by phone at<a href="tel:%20+44(0)2031515550"
                                                                     style="color:#000000;font-weight:500;direction:ltr;text-decoration:none"
-                                                                    target="_blank"> +84 988 886 887</a>
+                                                                    target="_blank"> +84 919 720 567</a>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -652,7 +652,7 @@ func SendEmailForResetPassword(toEmail string, account string, user_password str
                                                                         class="il">fxchampionship</span>.com</a><br> or
                                                                 by phone at<a href="tel:%20+44(0)2031515550"
                                                                     style="color:#000000;font-weight:500;direction:ltr;text-decoration:none"
-                                                                    target="_blank"> +84 988 886 887</a>
+                                                                    target="_blank"> +84 919 720 567</a>
                                                             </td>
                                                         </tr>
                                                     </tbody>
