@@ -537,9 +537,8 @@ func approvalContest(c *gin.Context) {
 	tx.Commit()
 	if err := SendEmailForContest(user.Email, currentContest.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, promoCode); err != nil {
 		fmt.Printf("err send: %v\n", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
 	}
+
 	//Delete from redis
 	keysToDelete := []string{}
 	keysToDelete = append(keysToDelete, setKey(input.CustomerID, db_greetings))
