@@ -6,8 +6,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v9"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -20,7 +22,7 @@ func init() {
 	// SendEmailForContest("vietvufx@gmail.com", "abchdwr", "8008000", "khongshochay", "khongsochay")
 	// SendEmailForRegister("vietvufx@gmail.com", "8008000", "khongshochay")
 	dbMigrations()
-	// setupLogger()
+	setupLogger()
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     "127.0.0.1:6379", // Thay thế bằng địa chỉ Redis thực tế
 		Password: "",               // Mật khẩu (nếu có)
@@ -62,3 +64,39 @@ func setKey(id uint, dbstring string) string {
 
 var db_greetings string = "db:greetings"
 var db_leaderboard string = "db:leaderboards"
+
+func setupLogger() {
+	log := logrus.New()
+	log.SetFormatter(&logrus.JSONFormatter{}) // Định dạng log JSON (tùy chọn)
+
+	// Mở tệp log để lưu
+	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err == nil {
+		log.SetOutput(file)
+	} else {
+		log.Info("Failed to log to file, using default stderr")
+	}
+
+	// Cấu hình logger cho Gin
+	gin.SetMode(gin.ReleaseMode) // Đặt chế độ Gin (ReleaseMode hoặc DebugMode)
+	gin.DefaultWriter = log.Writer()
+}
+
+func Logger(c *gin.Context) {
+	log := logrus.New()
+
+	// Logging thông tin về yêu cầu
+	log.WithFields(logrus.Fields{
+		"clientIP": c.ClientIP(),
+		"method":   c.Request.Method,
+		"path":     c.FullPath(),
+	}).Info("Request")
+
+	// Thực hiện xử lý
+
+	// Logging thông tin về phản hồi
+	log.WithFields(logrus.Fields{
+		"clientIP": c.ClientIP(),
+		"status":   c.Writer.Status(),
+	}).Info("Response")
+}
