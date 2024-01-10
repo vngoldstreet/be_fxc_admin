@@ -162,8 +162,13 @@ func main() {
 	private.POST("/upload-old-leaderboard", upLoadOldLeaderboard)
 	private.POST("/create-contest", createContest)
 	private.POST("/create-transaction", createTransactions)
-	private.POST("/update-contest-id", updateContestByID)                              //done
-	private.POST("/contest-approval", approvalContest)                                 //done
+	private.POST("/update-contest-id", updateContestByID) //done
+
+	private.POST("/contest-approval", approvalContest) //done
+	private.GET("/contest/get-account-store", contestGetAccountStore)
+	private.GET("/contest/get-current-contest", contestGetCurrentContest)
+	private.POST("/contest/send-email", sendEmailFromAdmin)
+
 	private.POST("/rejoin-contest-approval", approvalRejoinContest)                    //done
 	private.POST("/admin-transaction", approvalTransactions)                           //done
 	private.POST("/cancel-transaction", cancelTransactions)                            //done

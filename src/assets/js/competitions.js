@@ -1,5 +1,5 @@
 let urlCompetitionList = "/auth/get-competition-request-list";
-let urlCreateALoginID = "/auth/contest-approval";
+let urlContestApproval = "/auth/contest-approval";
 let urlRejoinToContest = "/auth/rejoin-contest-approval";
 let urlConfirmationTransactions = "/auth/admin-transaction";
 let urlRejectTransactions = "/auth/cancel-transaction";
@@ -153,52 +153,159 @@ $(document).ready(function () {
   GetListOfTransactions()
 })
 
+let handleGetStore = async (param_contest_id, param_customer_id) => {
+  try {
+    let checkCurrentContest = await fetchGetAsync(`auth/contest/get-current-contest?contest_id=${param_contest_id}`);
+    let checkStore = await fetchGetAsync(`auth/contest/get-account-store?type_id=${checkCurrentContest.type_id}`);
+    $("#inpLoginID").val(checkStore.fx_id)
+    $("#inpMasterPassword").val(checkStore.fx_master_pw)
+    $("#inpInvestorPassword").val(checkStore.fx_invester_pw)
+
+    $("#confirm_for_transaction").on("click", function (e) {
+      e.preventDefault()
+      $("#confirm_for_transaction").prop("disabled", true);
+      let jwtToken = getCookie("token");
+      if (!jwtToken) {
+        console.error("Error: JWT token is missing.");
+        return;
+      }
+
+      let inpApproval = {
+        "contest_id": param_contest_id,
+        "customer_id": param_customer_id,
+        "fx_id": checkStore.fx_id,
+        "fx_master_pw": checkStore.fx_master_pw,
+        "fx_invester_pw": checkStore.fx_invester_pw,
+      };
+      // console.log(JSON.stringify(inpApproval))
+      let headers = new Headers({
+        'Authorization': `Bearer ${jwtToken}`
+      });
+
+      fetch(urlContestApproval, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(inpApproval),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not successful");
+          }
+          return response.json(); // Parse the response JSON if needed
+        })
+        .then(dataResponse => {
+          console.log(dataResponse)
+          let string_email = JSON.stringify(dataResponse.email)
+          let html = `
+            <div class="row">
+              <div class="col-lg-6">
+                 <code class='w-100 text-success'>Message: ${dataResponse.message}</code> <br>
+                 <code class='w-100 text-success'>${dataResponse.message_err}</code>
+              </div>
+              <div class="col-lg-6">
+                  <h3 class='w-100 text-success'>Thông tin email:</h3><br>
+                  <code class='w-100 text-primary'>ContestID: ${dataResponse.email.contest_id}</code><br>
+                  <code class='w-100 text-primary'>Email: ${dataResponse.email.email}</code><br>
+                  <code class='w-100 text-primary'>FXID: ${dataResponse.email.fx_id}</code><br>
+                  <code class='w-100 text-primary'>MasterPass: ${dataResponse.email.fx_master_pw}</code><br>
+                  <code class='w-100 text-primary'>InvestorPass: ${dataResponse.email.fx_invester_pw}</code><br>
+                  <code class='w-100 text-primary'>PromoCode: ${dataResponse.email.promo_code}</code>
+
+                  <button onclick="SendEmailToCustomer('${dataResponse.email.email}','${dataResponse.email.contest_id}','${dataResponse.email.fx_id}','${dataResponse.email.fx_master_pw}','${dataResponse.email.fx_invester_pw}','${dataResponse.email.promo_code}')" type="button" class="btn btn-danger p-1 w-100">SendEmail</button>
+                  <code id="feedback_send_email"></code>
+              </div>
+            </div>
+            `
+          $("#join_contest_message").removeClass().addClass("fw-semibold");
+          $("#join_contest_message").html(html);
+          GetListOfTransactions()
+        })
+        .catch(error => {
+          let html = `<code class='w-100 text-danger'>${error}</code>`
+          $("#join_contest_message").html(html);
+          console.error("Error:", error);
+        });
+    });
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+async function SendEmailToCustomer(email, contest_id, fx_id, fx_master_pw, fx_invester_pw, promo_code) {
+  try {
+    let jwtToken = getCookie("token");
+    if (!jwtToken) {
+      console.error("Error: JWT token is missing.");
+      return;
+    }
+    let inpEmail = {
+      "email": email,
+      "contest_id": contest_id,
+      "fx_id": fx_id,
+      "fx_master_pw": fx_master_pw,
+      "fx_invester_pw": fx_invester_pw,
+      "promo_code": promo_code,
+    };
+    console.log(JSON.stringify(inpEmail))
+    let headers = new Headers({
+      'Authorization': `Bearer ${jwtToken}`
+    });
+
+    fetch('/auth/contest/send-email', {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(inpEmail),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not successful");
+        }
+        return response.json(); // Parse the response JSON if needed
+      })
+      .then(dataResponse => {
+        console.log(dataResponse)
+        let html = `
+            <code class='w-100 ${dataResponse.class}'>Message: ${dataResponse.message}</code>
+            `
+        $("#feedback_send_email").html(html);
+        GetListOfTransactions()
+      })
+      .catch(error => {
+        let html = `<code class='w-100 text-danger'>${error}</code>`
+        $("#join_contest_message").html(html);
+        console.error("Error:", error);
+      });
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+let fetchGetAsync = async (url) => {
+  let jwtToken = getCookie("token");
+  if (!jwtToken) {
+    console.error("Error: JWT token is missing.");
+    return;
+  }
+  let headers = new Headers({
+    'Authorization': `Bearer ${jwtToken}`
+  });
+  let response = await fetch(url, {
+    method: "GET",
+    headers: headers
+  });
+  let data = await response.json();
+  return data;
+};
+
 function ShowTransactionInformation(transaction_id, customer_id, contest_id, name) {
   $("#confirm_for_transaction").prop("disabled", false);
   $("#confirm_for_transaction").text(`Approval for this competition: ${contest_id}`)
   $("#inpContestID").attr("value", contest_id)
   $("#inpCustomerID").attr("value", `${customer_id} - ${name}`)
-
-  $("#confirm_for_transaction").on("click", function (e) {
-    e.preventDefault()
-    $("#confirm_for_transaction").prop("disabled", true);
-
-    // let fx_id_text = $("#inpLoginID").val();
-    // let fx_master_password = $("#inpMasterPassword").val();
-    // let fx_investor_password = $("#inpInvestorPassword").val();
-
-    // if (fx_id_text === '') {
-    //   $('#inpLoginID').addClass('is-invalid');
-    //   $('#fb_fx_id_text').addClass('invalid-feedback').text('LoginID is required'); // Display an error message
-    //   return;
-    // } else {
-    //   // Valid email format
-    //   $('#inpLoginID').removeClass('is-invalid').addClass('is-valid');
-    //   $('#fb_fx_id_text').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
-    // }
-    // if (fx_master_password === '') {
-    //   $('#inpMasterPassword').addClass('is-invalid');
-    //   $('#fb_fx_master_password').addClass('invalid-feedback').text('MasterPassword is required'); // Display an error message
-    //   return;
-    // } else {
-    //   // Valid email format
-    //   $('#inpMasterPassword').removeClass('is-invalid').addClass('is-valid');
-    //   $('#fb_fx_master_password').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
-    // }
-    // if (fx_investor_password === '') {
-    //   $('#inpInvestorPassword').addClass('is-invalid');
-    //   $('#fb_fx_invester_password').addClass('invalid-feedback').text('InvestorPassword is required'); // Display an error message
-    //   return;
-    // } else {
-    //   // Valid email format
-    //   $('#inpInvestorPassword').removeClass('is-invalid').addClass('is-valid');
-    //   $('#fb_fx_invester_password').removeClass('invalid-feedback').addClass('invalid-feedback').text('Look good'); // Clear the error message
-    // }
-
-    //, fx_id_text, fx_master_password, fx_investor_password
-    CreateMetaTraderData(contest_id, customer_id, transaction_id)
-  });
+  handleGetStore(contest_id, customer_id)
 }
+// CreateMetaTraderData(contest_id, customer_id, transaction_id)
+
 
 function ShowRejoin(param_id, customer_id, contest_id, name) {
   $("#approval_title_rejoin").text(`Approval for this competition: ${contest_id}`)
@@ -250,50 +357,7 @@ function ApprovalRejoinToContest(contest_id, customer_id) {
     });
 }
 //, fx_id, fx_master_password, fx_investor_password
-function CreateMetaTraderData(contest_id, customer_id, transaction_id) {
-  let jwtToken = getCookie("token");
-  if (!jwtToken) {
-    console.error("Error: JWT token is missing.");
-    return;
-  }
 
-  let inpApproval = {
-    "contest_id": contest_id,
-    "customer_id": customer_id
-    // "fx_id": fx_id,
-    // "fx_master_pw": fx_master_password,
-    // "fx_invester_pw": fx_investor_password,
-  };
-  // console.log(JSON.stringify(inpApproval))
-  let headers = new Headers({
-    'Authorization': `Bearer ${jwtToken}`
-  });
-
-  fetch(urlCreateALoginID, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(inpApproval),
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Network response was not successful");
-      }
-      return response.json(); // Parse the response JSON if needed
-    })
-    .then(dataResponse => {
-      let stringData = JSON.stringify(dataResponse)
-      let html = `<code class='w-100 text-success'>${stringData}</code>`
-      $("#join_contest_message").removeClass().addClass("fw-semibold");
-      $("#join_contest_message").html(html);
-      // ConfirmTransaction(transaction_id);
-      GetListOfTransactions()
-    })
-    .catch(error => {
-      let html = `<code class='w-100 text-danger'>${error}</code>`
-      $("#join_contest_message").html(html);
-      console.error("Error:", error);
-    });
-}
 
 function ConfirmRejectTransaction(param_id) {
   let jwtToken = getCookie("token");

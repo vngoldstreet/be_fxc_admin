@@ -437,6 +437,26 @@ func createContest(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": newContest})
 }
 
+func contestGetAccountStore(c *gin.Context) {
+	typeID := c.Query("type_id")
+	accountStore := AccountStores{}
+	if err := db_ksc.Where("type_id = ? and status_id = 0", typeID).Find(&accountStore).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, accountStore)
+}
+
+func contestGetCurrentContest(c *gin.Context) {
+	contestID := c.Query("contest_id")
+	contestInList := ListContests{}
+	if err := db_ksc.Where("contest_id = ?", contestID).Find(&contestInList).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, contestInList)
+}
+
 func approvalContest(c *gin.Context) {
 	var input Contests
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -444,7 +464,6 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 	tx := db_ksc.Begin()
-
 	//Lấy thông tin khách hàng đã đăng ký tham gia cuộc thi
 	currentContest := Contests{}
 	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
@@ -461,32 +480,29 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
-	//Lấy 1 tài khoản đã tạo từ store
-	accountStore := AccountStores{}
-	if err := tx.Where("type_id = ? and status_id = 0", contestInList.TypeID).Limit(1).Find(&accountStore).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	currentContest.FxID = accountStore.FxID
-	currentContest.FxMasterPw = accountStore.FxMasterPw
-	currentContest.FxInvesterPw = accountStore.FxInvesterPw
+	currentContest.FxID = input.FxID
+	currentContest.FxMasterPw = input.FxMasterPw
+	currentContest.FxInvesterPw = input.FxInvesterPw
 	currentContest.StatusID = 1
 
+	//Update tại Contests{} khách hàng đã đăng ký tham gia cuộc thi
 	if err := tx.Model(&Contests{}).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Updates(currentContest).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	accountStore.StatusID = 1
-	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", accountStore.FxID).Updates(accountStore).Error; err != nil {
+	//Cập nhật trạng thái store
+	accountStore := AccountStores{
+		StatusID: 1,
+	}
+	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", input.FxID).Updates(accountStore).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	//Lấy thông tin user để tạo mới leaderboard
 	user := CpsUsers{}
 	if err := tx.Model(&user).Select("name, email").Where("id = ?", input.CustomerID).First(&user).Error; err != nil {
 		tx.Rollback()
@@ -509,10 +525,10 @@ func approvalContest(c *gin.Context) {
 	}
 
 	newLeaderBoard := RawMT5Datas{
-		Login:     currentContest.FxID,
+		Login:     input.FxID,
 		Name:      user.Name,
 		Email:     user.Email,
-		ContestID: currentContest.ContestID,
+		ContestID: input.ContestID,
 		Balance:   float64(listContest.StartBalance),
 		Equity:    float64(listContest.StartBalance),
 	}
@@ -523,11 +539,13 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
+	//Tạo mới promo code nếu có
 	promoCode := ""
 	if index := (listContest.CurrentPerson / listContest.MaximumPerson) * 100; index <= 50 {
 		promoCode = generatePromoCode(input.CustomerID)
 	}
 
+	//Cập nhật trạng thái của transaction
 	//========================================
 	currentTrans := CpsTransactions{}
 	if err := tx.Model(&currentTrans).Where("customer_id = ? and contest_id = ? and status_id = 1", input.CustomerID, input.ContestID).First(&currentTrans).Error; err != nil {
@@ -555,8 +573,10 @@ func approvalContest(c *gin.Context) {
 	formatMessage := "Approved a customer's participation in the contest: %s\nCustomer: %s (%d - %s)\nFxID: %s\nFxInvesterPw: %s"
 	msg := fmt.Sprintf(formatMessage, input.ContestID, user.Name, input.CustomerID, user.Email, currentContest.FxID, currentContest.FxInvesterPw)
 
+	msgErr := ""
 	if err := SaveToMessages(1, msg); err != nil {
 		fmt.Printf("err: %v\n", err)
+		msgErr += err.Error() + "\n"
 	}
 
 	type_string2 := CheckTransactiontype(currentTrans.TypeID)
@@ -565,10 +585,16 @@ func approvalContest(c *gin.Context) {
 
 	if err := SaveToMessages(2, msg2); err != nil {
 		fmt.Printf("err: %v\n", err)
+		msgErr += err.Error() + "\n"
 	}
 
-	if err := SendEmailForContest(user.Email, currentContest.ContestID, currentContest.FxID, currentContest.FxMasterPw, currentContest.FxInvesterPw, promoCode); err != nil {
-		fmt.Printf("err send: %v\n", err)
+	emailData := EmailConfirmations{
+		Email:        user.Email,
+		ContestID:    input.ContestID,
+		FxID:         currentContest.FxID,
+		FxMasterPw:   currentContest.FxMasterPw,
+		FxInvesterPw: currentContest.FxInvesterPw,
+		PromoCode:    promoCode,
 	}
 
 	//Delete from redis
@@ -578,7 +604,40 @@ func approvalContest(c *gin.Context) {
 	// 	fmt.Printf("err Del Redis key: %v\n", err)
 	// }
 
-	c.JSON(http.StatusOK, gin.H{"data": currentContest})
+	c.JSON(http.StatusOK, gin.H{
+		"data":        currentContest,
+		"message_err": msgErr,
+		"message":     "Duyệt thành công",
+		"email":       emailData,
+	})
+}
+
+func sendEmailFromAdmin(c *gin.Context) {
+	var input EmailConfirmations
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := SendEmailForContest(input.Email, input.ContestID, input.FxID, input.FxMasterPw, input.FxInvesterPw, input.PromoCode); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"class":   "text-danger",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Thành công gửi email tới khách hàng!",
+		"class":   "text-success",
+	})
+}
+
+type EmailConfirmations struct {
+	Email        string `json:"email"`
+	ContestID    string `json:"contest_id"`
+	FxID         string `json:"fx_id"`
+	FxMasterPw   string `json:"fx_master_pw"`
+	FxInvesterPw string `json:"fx_invester_pw"`
+	PromoCode    string `json:"promo_code"`
 }
 
 func approvalRejoinContest(c *gin.Context) {
