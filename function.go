@@ -14,6 +14,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func dbMigrations() {
@@ -467,6 +468,11 @@ func approvalContest(c *gin.Context) {
 	//Lấy thông tin khách hàng đã đăng ký tham gia cuộc thi
 	currentContest := Contests{}
 	if err := tx.Model(&currentContest).Where("customer_id = ? and contest_id = ? and status_id=0", input.CustomerID, input.ContestID).Find(&currentContest).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query Contests from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -475,6 +481,11 @@ func approvalContest(c *gin.Context) {
 	//Cấp tài khoản cho khách hàng
 	contestInList := ListContests{}
 	if err := tx.Select("type_id").Where("contest_id = ?", input.ContestID).Find(&contestInList).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query ListContests from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -487,6 +498,11 @@ func approvalContest(c *gin.Context) {
 
 	//Update tại Contests{} khách hàng đã đăng ký tham gia cuộc thi
 	if err := tx.Model(&Contests{}).Where("customer_id = ? and contest_id = ?", input.CustomerID, input.ContestID).Updates(currentContest).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query Contests from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -497,6 +513,11 @@ func approvalContest(c *gin.Context) {
 		StatusID: 1,
 	}
 	if err := tx.Model(&AccountStores{}).Where("fx_id = ?", input.FxID).Updates(accountStore).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query AccountStores from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -504,7 +525,12 @@ func approvalContest(c *gin.Context) {
 
 	//Lấy thông tin user để tạo mới leaderboard
 	user := CpsUsers{}
-	if err := tx.Model(&user).Select("name, email").Where("id = ?", input.CustomerID).First(&user).Error; err != nil {
+	if err := tx.Model(&user).Select("id, name, email").Where("id = ?", input.CustomerID).First(&user).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query CpsUsers from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -512,6 +538,11 @@ func approvalContest(c *gin.Context) {
 
 	listContest := ListContests{}
 	if err := tx.Model(&listContest).Where("contest_id = ?", input.ContestID).First(&listContest).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query ListContests from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -519,6 +550,11 @@ func approvalContest(c *gin.Context) {
 
 	currentLeaderBoard := RawMT5Datas{}
 	if row := tx.Model(&RawMT5Datas{}).Where("login = ?", currentContest.FxID).Find(&currentLeaderBoard).RowsAffected; row > 0 {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       "Row đã tồn tại",
+		}).Error("Failed to query RawMT5Datas from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error"})
 		return
@@ -549,6 +585,11 @@ func approvalContest(c *gin.Context) {
 	//========================================
 	currentTrans := CpsTransactions{}
 	if err := tx.Model(&currentTrans).Where("customer_id = ? and contest_id = ? and status_id = 1", input.CustomerID, input.ContestID).First(&currentTrans).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query CpsTransactions from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -556,6 +597,11 @@ func approvalContest(c *gin.Context) {
 
 	currentTrans.StatusID = 2
 	if err := tx.Save(&currentTrans).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to ave StatusID CpsTransactions to database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -563,6 +609,11 @@ func approvalContest(c *gin.Context) {
 
 	wallet := CpsWallets{}
 	if err := tx.Model(wallet).Where("customer_id = ?", input.CustomerID).First(&wallet).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to query wallet from database")
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -701,6 +752,11 @@ func approvalTransactions(c *gin.Context) {
 	newTrans := CpsTransactions{}
 
 	if err := tx.Model(newTrans).Where("id = ?", input.ID).First(&newTrans).Error; err != nil {
+		logrusApp.WithFields(logrus.Fields{
+			"transaction_id": input.ID,
+			"error":          err.Error(),
+		}).Error("Failed to query CpsTransactions from database")
+
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -713,6 +769,10 @@ func approvalTransactions(c *gin.Context) {
 			if newTrans.StatusID == 1 {
 				wallet := CpsWallets{}
 				if err := tx.Where("customer_id = ?", newTrans.CustomerID).First(&wallet).Error; err != nil {
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to query CpsWallets from database")
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
@@ -723,6 +783,10 @@ func approvalTransactions(c *gin.Context) {
 				newBalance := currentBalance + changeBalance
 
 				if err := tx.Model(newWallet).Where("customer_id = ?", newTrans.CustomerID).Update("balance", newBalance).Error; err != nil {
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to Update CpsWallets to database")
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
@@ -733,6 +797,10 @@ func approvalTransactions(c *gin.Context) {
 				newTrans.NBalance = newBalance
 
 				if err := tx.Save(&newTrans).Error; err != nil {
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to save CpsTransactions to database")
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
@@ -740,6 +808,10 @@ func approvalTransactions(c *gin.Context) {
 
 				user := CpsUsers{}
 				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).First(&user).Error; err != nil {
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to query CpsUsers from database")
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
@@ -775,6 +847,10 @@ func approvalTransactions(c *gin.Context) {
 			if newTrans.StatusID == 1 {
 				newTrans.StatusID = 2
 				if err := tx.Save(&newTrans).Error; err != nil {
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to save newTrans to database")
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
@@ -782,12 +858,20 @@ func approvalTransactions(c *gin.Context) {
 
 				user := CpsUsers{}
 				if err := tx.Model(&user).Select("id, name, email").Where("id = ?", newTrans.CustomerID).First(&user).Error; err != nil {
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to get CpsUsers to database")
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 				wallet := CpsWallets{}
 				if err := tx.Model(wallet).Where("customer_id = ?", user.ID).First(&wallet).Error; err != nil {
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to get CpsWallets to database")
 					tx.Rollback()
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
@@ -798,6 +882,10 @@ func approvalTransactions(c *gin.Context) {
 
 				if err := SaveToMessages(2, msg); err != nil {
 					fmt.Printf("err: %v\n", err)
+					logrusApp.WithFields(logrus.Fields{
+						"customer_id": newTrans.CustomerID,
+						"error":       err.Error(),
+					}).Error("Failed to save SaveToMessages")
 				}
 
 				//Delete from redis
@@ -909,7 +997,6 @@ func approvalTransactions(c *gin.Context) {
 			}
 		}
 	}
-
 }
 
 func cancelTransactions(c *gin.Context) {
