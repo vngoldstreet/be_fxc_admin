@@ -608,9 +608,11 @@ func approvalContest(c *gin.Context) {
 	}
 
 	if err := CalculateCommission(currentTrans); err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		logrusApp.WithFields(logrus.Fields{
+			"customer_id": input.CustomerID,
+			"contest_id":  input.ContestID,
+			"error":       err.Error(),
+		}).Error("Failed to create commission")
 	}
 
 	wallet := CpsWallets{}
