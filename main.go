@@ -11,30 +11,27 @@ import (
 )
 
 var (
-	onceMap    sync.Map
-	isApproved bool
+	requestTracker sync.Map
 )
 
-func ApprovalMiddleware(fullPath string) gin.HandlerFunc {
+func RateLimitMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Printf("c.FullPath(): %v\n", c.FullPath())
-		if c.Request.Method == http.MethodPost && c.FullPath() == fullPath {
-			// Sử dụng sync.Once để đảm bảo middleware chỉ được thực hiện một lần
-			fmt.Printf("fullPath: %v\n", fullPath)
-			onceKey := fullPath
-			_, exists := onceMap.LoadOrStore(onceKey, &sync.Once{})
+		if c.Request.Method == http.MethodPost {
+			fullPath := c.FullPath()
 
-			if !exists {
-				// Thực hiện logic xử lý yêu cầu ở đây
-				fmt.Printf("%s logic executed.\n", fullPath)
-				isApproved = true
-			}
+			// Tạo key duy nhất cho mỗi full path và IP
+			key := fmt.Sprintf("%s-%s", fullPath, c.ClientIP())
 
-			if !isApproved {
-				// Nếu không được phê duyệt, trả về lỗi
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Not approved"})
+			// Kiểm tra xem request có được xử lý trong 1s không
+			if _, exists := requestTracker.LoadOrStore(key, true); exists {
+				c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "Too many requests for the same full path"})
 				return
 			}
+
+			// Thiết lập thời gian hết hạn sau 1s để giải phóng bộ nhớ
+			time.AfterFunc(3*time.Second, func() {
+				requestTracker.Delete(key)
+			})
 		}
 		c.Next()
 	}
@@ -127,16 +124,14 @@ func main() {
 	private.POST("/create-transaction", createTransactions)
 	private.POST("/update-contest-id", updateContestByID) //done
 
-	private.Use(ApprovalMiddleware("/contest-approval"))
+	private.Use(RateLimitMiddleware())
 	private.POST("/contest-approval", approvalContest) //done
 	private.GET("/contest/get-account-store", contestGetAccountStore)
 	private.GET("/contest/get-current-contest", contestGetCurrentContest)
 	private.POST("/contest/send-email", sendEmailFromAdmin)
 
-	private.Use(ApprovalMiddleware("/rejoin-contest-approval"))
 	private.POST("/rejoin-contest-approval", approvalRejoinContest) //done
 
-	private.Use(ApprovalMiddleware("/admin-transaction"))
 	private.POST("/admin-transaction", approvalTransactions)                           //done
 	private.POST("/cancel-transaction", cancelTransactions)                            //done
 	private.GET("/get-transaction-list", getTransactions)                              //done
