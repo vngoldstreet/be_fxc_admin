@@ -24,7 +24,6 @@ func init() {
 	// SendEmailForRegister("vietvufx@gmail.com", "8008000", "khongshochay")
 	dbMigrations()
 	setupLogger()
-
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     "127.0.0.1:6379", // Thay thế bằng địa chỉ Redis thực tế
 		Password: "",               // Mật khẩu (nếu có)

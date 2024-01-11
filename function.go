@@ -607,6 +607,12 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
+	if err := CalculateCommission(currentTrans); err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	wallet := CpsWallets{}
 	if err := tx.Model(wallet).Where("customer_id = ?", input.CustomerID).First(&wallet).Error; err != nil {
 		logrusApp.WithFields(logrus.Fields{

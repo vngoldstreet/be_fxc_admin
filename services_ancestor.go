@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -57,4 +59,61 @@ func activePartner(c *gin.Context) {
 		"ancestor": newAncestor,
 		"partner":  activePartner,
 	})
+}
+
+// 174
+func CalculateCommission(transaction CpsTransactions) error {
+	tx := db_ksc.Begin()
+
+	//Check phả hệ của partner
+	ancestor := Ancestors{}
+	if err := tx.Model(&Ancestors{}).Where("partner_id = ?", transaction.CustomerID).Find(&ancestor).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	arrString := strings.Split(ancestor.AncestorPath, "_")
+	arrInt := []int{}
+	for _, v := range arrString {
+		num, err := strconv.Atoi(v)
+		if err != nil {
+			fmt.Println("Error converting string to int:", err)
+			return err
+		}
+		arrInt = append(arrInt, num)
+	}
+	index := findIndex(arrInt, int(transaction.CustomerID))
+
+	for i, v := range arrInt {
+		if i > index {
+			continue
+		}
+		newCommission := Commissions{
+			TransactionID:   int(transaction.ID),
+			TransactionType: transaction.TypeID,
+			ParentID:        v,
+		}
+		if err := tx.Model(&Commissions{}).Create(&newCommission).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func findIndex(arr []int, target int) int {
+	for i, value := range arr {
+		if value == target {
+			return i // Trả về vị trí của số nguyên trong mảng
+		}
+	}
+	return -1 // Trả về -1 nếu số nguyên không được tìm thấy trong mảng
+}
+
+type Commissions struct {
+	gorm.Model
+	TransactionID   int `json:"transaction_id"`
+	TransactionType int `json:"transaction_type"`
+	ParentID        int `json:"parent_id"`
 }
