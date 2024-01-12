@@ -95,6 +95,7 @@ func CalculateCommission(transaction CpsTransactions, amount float64, type_id in
 			ContestID:       transaction.ContestID,
 			Amount:          amount,
 			TypeID:          type_id,
+			Joined:          1,
 		}
 		if err := tx.Model(&Commissions{}).Create(&newCommission).Error; err != nil {
 			tx.Rollback()
