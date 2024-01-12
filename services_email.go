@@ -19,9 +19,8 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 	trading_server := os.Getenv("EMAIL_SERVER_TRADING")
 	trading_platform := os.Getenv("EMAIL_PLATFORM_TRADING")
 	// Gmail SMTP server and port
-	smtpHost := "smtp.zoho.com"
+	smtpHost := "mail163244.maychuemail.com"
 	smtpPort := 587
-
 	// Email subject and body
 	subject := fmt.Sprintf("Trading account details for the competition: %s", contest_id)
 	body := `<body>
@@ -240,7 +239,7 @@ func SendEmailForRegister(toEmail string, account string, user_password string) 
 	username := os.Getenv("EMAIL_ADDRESS")
 	password := os.Getenv("EMAIL_PASSWORD")
 	// Gmail SMTP server and port
-	smtpHost := "smtp.zoho.com"
+	smtpHost := "mail163244.maychuemail.com"
 	smtpPort := 587
 
 	// Email subject and body
@@ -476,7 +475,7 @@ func SendEmailForResetPassword(toEmail string, account string, user_password str
 	username := os.Getenv("EMAIL_ADDRESS")
 	password := os.Getenv("EMAIL_PASSWORD")
 	// Gmail SMTP server and port
-	smtpHost := "smtp.zoho.com"
+	smtpHost := "mail163244.maychuemail.com"
 	smtpPort := 587
 
 	// Email subject and body
