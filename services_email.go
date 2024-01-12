@@ -130,6 +130,10 @@ func SendEmailForContest(toEmail string, contest_id string, account string, user
 																				</td>
 																			</tr>
 																			<tr>
+																				<td align="left" style="font:300 20px/28px roboto,helvetica,sans-serif;color:#FF004D;padding:40px 0 0;margin:0">Your contest participation account will be activated during the competition. Please wait until the official start of the contest.
+																				</td>
+																			</tr>
+                                                                            <tr>
 																				<td align="left" style="font:300 20px/28px roboto,helvetica,sans-serif;color:#636e72;padding:40px 0 0;margin:0">Use this information to access the trading platform you selected during the registration process.
 																				</td>
 																			</tr>
