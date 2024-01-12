@@ -607,7 +607,7 @@ func approvalContest(c *gin.Context) {
 		return
 	}
 
-	if err := CalculateCommission(currentTrans); err != nil {
+	if err := CalculateCommission(currentTrans, listContest.Amount, listContest.TypeID); err != nil {
 		logrusApp.WithFields(logrus.Fields{
 			"customer_id": input.CustomerID,
 			"contest_id":  input.ContestID,

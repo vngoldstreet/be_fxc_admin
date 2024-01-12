@@ -62,7 +62,7 @@ func activePartner(c *gin.Context) {
 }
 
 // 174
-func CalculateCommission(transaction CpsTransactions) error {
+func CalculateCommission(transaction CpsTransactions, amount float64, type_id int) error {
 	db_ksc.AutoMigrate(&Commissions{})
 	tx := db_ksc.Begin()
 	//Check phả hệ của partner
@@ -93,6 +93,8 @@ func CalculateCommission(transaction CpsTransactions) error {
 			TransactionType: transaction.TypeID,
 			ParentID:        v,
 			ContestID:       transaction.ContestID,
+			Amount:          amount,
+			TypeID:          type_id,
 		}
 		if err := tx.Model(&Commissions{}).Create(&newCommission).Error; err != nil {
 			tx.Rollback()
@@ -114,8 +116,11 @@ func findIndex(arr []int, target int) int {
 
 type Commissions struct {
 	gorm.Model
-	TransactionID   int    `json:"transaction_id"`
-	TransactionType int    `json:"transaction_type"`
-	ParentID        int    `json:"parent_id"`
-	ContestID       string `json:"contest_id"`
+	TransactionID   int     `json:"transaction_id"`
+	TransactionType int     `json:"transaction_type"`
+	ParentID        int     `json:"parent_id"`
+	ContestID       string  `json:"contest_id"`
+	Amount          float64 `json:"amount"`
+	TypeID          int     `json:"type_id"`
+	Joined          int     `json:"joined"`
 }
