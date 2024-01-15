@@ -63,7 +63,6 @@ func activePartner(c *gin.Context) {
 
 // 174
 func CalculateCommission(transaction CpsTransactions, amount float64, type_id int) error {
-	db_ksc.AutoMigrate(&Commissions{})
 	tx := db_ksc.Begin()
 	//Check phả hệ của partner
 	ancestor := Ancestors{}
@@ -92,6 +91,7 @@ func CalculateCommission(transaction CpsTransactions, amount float64, type_id in
 			TransactionID:   int(transaction.ID),
 			TransactionType: transaction.TypeID,
 			ParentID:        v,
+			CustomerID:      transaction.CustomerID,
 			ContestID:       transaction.ContestID,
 			Amount:          amount,
 			TypeID:          type_id,
@@ -120,6 +120,7 @@ type Commissions struct {
 	TransactionID   int     `json:"transaction_id"`
 	TransactionType int     `json:"transaction_type"`
 	ParentID        int     `json:"parent_id"`
+	CustomerID      uint    `json:"customer_id"`
 	ContestID       string  `json:"contest_id"`
 	Amount          float64 `json:"amount"`
 	TypeID          int     `json:"type_id"`

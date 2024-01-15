@@ -18,8 +18,7 @@ import (
 )
 
 func dbMigrations() {
-	// db_ksc.Migrator().DropTable(&OldLeaderBoards{})
-	// db_ksc.AutoMigrate(&ListContests{})
+	db_ksc.AutoMigrate(&Commissions{})
 }
 
 func CheckTokenValid(token string) error {
