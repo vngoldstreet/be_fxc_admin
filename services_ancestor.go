@@ -31,10 +31,17 @@ func activePartner(c *gin.Context) {
 		return
 	}
 	tx := db_ksc.Begin()
+	path := ""
+	if input.ParentID == input.PartnerID {
+		path = fmt.Sprintf("%d", input.PartnerID)
+	} else {
+		path = fmt.Sprintf("%d_%d", input.ParentID, input.PartnerID)
+	}
+
 	newAncestor := Ancestors{
 		ParentID:     input.ParentID,
 		PartnerID:    input.PartnerID,
-		AncestorPath: fmt.Sprintf("%d_%d", input.ParentID, input.PartnerID),
+		AncestorPath: path,
 	}
 	if err := tx.Create(&newAncestor).Error; err != nil {
 		tx.Rollback()
@@ -42,13 +49,52 @@ func activePartner(c *gin.Context) {
 		return
 	}
 
-	activePartner := Partners{
-		CustomerID: input.PartnerID,
-		IsPartner:  1,
-		Commission: 0.3,
+	commissionLevels := []CommissionLevels{
+		{
+			TypeID:       1,
+			PartnerID:    input.PartnerID,
+			Level_1:      1000,
+			Level_2:      1500,
+			Level_3:      2000,
+			Level_4:      3000,
+			Level_5:      5000,
+			Commission_1: 0,
+			Commission_2: 0,
+			Commission_3: 0,
+			Commission_4: 0,
+			Commission_5: 0,
+		},
+		{
+			TypeID:       2,
+			PartnerID:    input.PartnerID,
+			Level_1:      50,
+			Level_2:      100,
+			Level_3:      150,
+			Level_4:      300,
+			Level_5:      500,
+			Commission_1: 0,
+			Commission_2: 0,
+			Commission_3: 0,
+			Commission_4: 0,
+			Commission_5: 0,
+		},
+		{
+			TypeID:       3,
+			PartnerID:    input.PartnerID,
+			Level_1:      50,
+			Level_2:      100,
+			Level_3:      150,
+			Level_4:      300,
+			Level_5:      500,
+			Commission_1: 0,
+			Commission_2: 0,
+			Commission_3: 0,
+			Commission_4: 0,
+			Commission_5: 0,
+		},
 	}
 
-	if err := tx.Create(&activePartner).Error; err != nil {
+	if err := tx.Create(&commissionLevels).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -57,7 +103,7 @@ func activePartner(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":   "Success",
 		"ancestor": newAncestor,
-		"partner":  activePartner,
+		"partner":  commissionLevels,
 	})
 }
 
