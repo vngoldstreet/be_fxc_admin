@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -18,21 +19,18 @@ var rdb *redis.Client
 
 func init() {
 	connectDatabase()
-
-	// SendEmailForContest("vietvufx@gmail.com", "abchdwr", "8008000", "khongshochay", "khongsochay")
-	// SendEmailForRegister("vietvufx@gmail.com", "8008000", "khongshochay")
-	// dbMigrations()
-	// setupLogger()
-	// rdb = redis.NewClient(&redis.Options{
-	// 	Addr:     "127.0.0.1:6379", // Thay thế bằng địa chỉ Redis thực tế
-	// 	Password: "",               // Mật khẩu (nếu có)
-	// 	DB:       0,                // Chọn cơ sở dữ liệu
-	// })
-	// ping, err := rdb.Ping(context.Background()).Result()
-	// if err != nil {
-	// 	fmt.Printf("Ping err: %v\n", err)
-	// }
-	// fmt.Printf("ping: %v\n", ping)
+	dbMigrations()
+	setupLogger()
+	rdb = redis.NewClient(&redis.Options{
+		Addr:     "127.0.0.1:6379", // Thay thế bằng địa chỉ Redis thực tế
+		Password: "",               // Mật khẩu (nếu có)
+		DB:       0,                // Chọn cơ sở dữ liệu
+	})
+	ping, err := rdb.Ping(context.Background()).Result()
+	if err != nil {
+		fmt.Printf("Ping err: %v\n", err)
+	}
+	fmt.Printf("ping: %v\n", ping)
 }
 
 func connectDatabase() {
