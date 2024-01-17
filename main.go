@@ -95,6 +95,51 @@ func main() {
 			"title": "Upload",
 		})
 	})
+	r.GET("/partners", func(c *gin.Context) {
+		// commissions := []CommissionLevels{}
+		cookie, err := c.Cookie("token")
+		if err != nil {
+			c.HTML(http.StatusOK, "partner.html", gin.H{
+				"title": "Partner",
+			})
+			return
+		}
+		uuid, err := ExtractTokenIDWithString(cookie)
+		if err != nil || uuid != 1 {
+			c.HTML(http.StatusOK, "partner.html", gin.H{
+				"title": "Partner",
+			})
+			return
+		}
+
+		commissions := []ResponseCommissionLevels{}
+		selectPromp := `commission_levels.type_id as type_id,
+					commission_levels.partner_id as partner_id,
+					commission_levels.level_1 as level_1,
+					commission_levels.level_2 as level_2,
+					commission_levels.level_3 as level_3,
+					commission_levels.level_4 as level_4,
+					commission_levels.level_5 as level_5,
+					commission_levels.commission_1 as commission_1,
+					commission_levels.commission_2 as commission_2,
+					commission_levels.commission_3 as commission_3,
+					commission_levels.commission_4 as commission_4,
+					commission_levels.commission_5 as commission_5,
+					cps_users.name as name,
+					cps_users.phone as phone,
+					cps_users.email as email
+				  `
+		if err := db_ksc.Model(&CommissionLevels{}).Select(selectPromp).Joins("INNER JOIN cps_users on commission_levels.partner_id = cps_users.id").Find(&commissions).Error; err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			// conn.WriteMessage(msgType, []byte("dataContestLists err: "+err.Error()))
+			return
+		}
+
+		c.HTML(http.StatusOK, "partner.html", gin.H{
+			"title":      "Partner",
+			"commission": commissions,
+		})
+	})
 	r.GET("/create-post", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "create-post.html", gin.H{
 			"title": "Create Post",

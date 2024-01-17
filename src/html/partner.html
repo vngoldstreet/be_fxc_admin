@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.title}}</title>
+  <link rel="shortcut icon" type="image/png" href="src/assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="src/assets/css/styles.min.css" />
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    {{template "left-sidebar.html"}}
+    <div class="body-wrapper">
+      {{template "header.html"}}
+      <div class="container-fluid">
+        <div class="row">
+          <div id="chart_div" class="col-lg-12 d-flex align-items-strech">
+            <div class="card w-100">
+              <div class="card-body">
+                <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                  <div class="mb-3 mb-sm-0">
+                    <h5 class="card-title fw-semibold">List of Partners</h5>
+                  </div>
+                </div>
+                <div class="table-responsive table-option">
+                  <table class="table text-wrap mb-0 align-middle">
+                    <thead class="text-dark fs-4 sticky-top bg-light">
+                      <tr>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">PartnerID</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Name/Email/Phone</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Level 1/Com 1</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Level 2/Com 2</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Level 3/Com 3</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Level 4/Com 4</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Level 5/Com 5</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Edit</h6>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="partner-lists">
+                      {{range .commission}}
+                      <tr>
+                        <td class="border-bottom-0">
+                          <span class="fw-semibold">{{.PartnerID}}</span>
+                        </td>
+                        <td class="border-bottom-0">
+                          <span class="fw-semibold">
+                            {{.Name}} <br>
+                            {{.Email}} <br>
+                            {{.Phone}}
+                          </span>
+                        </td>
+                        <td class="border-bottom-0">
+                          <span class="fw-normal">{{.Level_1}}</span> <br>
+                          <span class="fw-normal text-center">${{.Commission_1}}</span>
+                        </td>
+                        <td class="border-bottom-0">
+                          <span class="fw-normal">{{.Level_2}}</span> <br>
+                          <span class="fw-normal">${{.Commission_2}}</span>
+                        </td>
+                        <td class="border-bottom-0">
+                          <span class="fw-normal">{{.Level_3}}</span> <br>
+                          <span class="fw-normal">${{.Commission_3}}</span>
+                        </td>
+                        <td class="border-bottom-0">
+                          <span class="fw-normal">{{.Level_4}}</span> <br>
+                          <span class="fw-normal">${{.Commission_4}}</span>
+                        </td>
+                        <td class="border-bottom-0">
+                          <span class="fw-normal">{{.Level_5}}</span> <br>
+                          <span class="fw-normal">${{.Commission_5}}</span>
+                        </td>
+                        <td class="border-bottom-0">
+                          <button onclick="" type="button" class="btn btn-danger p-1 w-100" data-bs-toggle="modal"
+                            data-bs-target="#modal_commission_editting">Edit</button>
+                        </td>
+                      </tr>
+                      {{end}}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal fade" id="modal_commission_editting" tabindex="-1" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Commission Editting</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="transaction-information-reject"></div>
+          </div>
+          <div class="modal-footer">
+            <br>
+            <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
+            <button id="reject_for_transaction" type="button" class="btn btn-danger">Rejection</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="src/assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="src/assets/js/app.min.js"></script>
+    <script src="src/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+    <script src="src/assets/libs/simplebar/dist/simplebar.js"></script>
+    <script src="src/assets/js/header.js"></script>
+    <script src="src/assets/js/sidebarmenu.js"></script>
+    <script src="src/assets/js/upload.js"></script>
+</body>
+
+</html>

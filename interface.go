@@ -367,3 +367,22 @@ type CommissionLevels struct {
 	Commission_4 float64 `json:"commission_4"`
 	Commission_5 float64 `json:"commission_5"`
 }
+
+type ResponseCommissionLevels struct {
+	gorm.Model
+	TypeID       int     `json:"type_id"` //=1 day, =2 week,-3 month
+	PartnerID    uint    `json:"partner_id"`
+	Level_1      int     `json:"level_1"`
+	Level_2      int     `json:"level_2"`
+	Level_3      int     `json:"level_3"`
+	Level_4      int     `json:"level_4"`
+	Level_5      int     `json:"level_5"`
+	Commission_1 float64 `json:"commission_1"`
+	Commission_2 float64 `json:"commission_2"`
+	Commission_3 float64 `json:"commission_3"`
+	Commission_4 float64 `json:"commission_4"`
+	Commission_5 float64 `json:"commission_5"`
+	Name         string  `json:"name"`
+	Email        string  `json:"email"`
+	Phone        string  `json:"phone"`
+}
